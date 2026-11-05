@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import Avatar from '#lib/components/Avatar.svelte';
   import Icon from '#lib/components/Icon.svelte';
   import CommentSection from '#lib/components/CommentSection.svelte';
@@ -54,7 +54,7 @@
 {#if data.loadError}
   <div class="error-message" role="alert">
     <span>文章加载失败，请刷新重试。</span>
-    <Button variant="outlined" onclick={() => location.reload()}>重试</Button>
+    <VxButton variant="outlined" onclick={() => location.reload()}>重试</VxButton>
   </div>
 {:else if data.article}
   <article class="vx-card vx-card--shadow article" aria-labelledby="article-title">

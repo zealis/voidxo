@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { InboxRequestError, sendMessage, type InboxMessage } from '#lib/api/inbox.js';
   import type { PageProps } from './$types';
 
@@ -109,7 +109,7 @@
       ></textarea>
       <div class="actions">
         <span class="counter">{[...draft].length} / 1000</span>
-        <Button type="submit" disabled={sending || !draft.trim()}>发送</Button>
+        <VxButton type="submit" disabled={sending || !draft.trim()}>发送</VxButton>
       </div>
     </form>
     {#if error}<p class="error" role="alert">{error}</p>{/if}

@@ -199,4 +199,46 @@ test.describe('mdui 2 试点验收', () => {
     expect(values).toEqual(['alice', 'secret']);
     await expect(page.locator('mdui-button[type="submit"]')).toBeVisible();
   });
+
+  test('认证页迁移：/register 文案、字段数量与值同步', async ({ page }) => {
+    await page.goto('/register');
+    await waitForTags(page, ['mdui-text-field', 'mdui-button']);
+    await expect(page.locator('h1')).toHaveText('注册');
+    await expect(page.getByText('3 至 20 个字符，可用中英文、数字、下划线与连字符')).toBeVisible();
+    await expect(page.getByText('至少 8 个字符')).toBeVisible();
+    await expect(page.locator('form mdui-text-field')).toHaveCount(5);
+    await page.locator('mdui-text-field[name="username"] input').fill('alice');
+    const value = await page
+      .locator('mdui-text-field[name="username"]')
+      .evaluate((el) => (el as HTMLElement & { value: string }).value);
+    expect(value).toBe('alice');
+    await expect(page.locator('mdui-button[type="submit"]')).toContainText('注册并登录');
+    await expect(page.locator('mdui-button[type="button"]')).toContainText('发送验证码');
+  });
+
+  test('认证页迁移：/forgot-password 文案与字段同步', async ({ page }) => {
+    await page.goto('/forgot-password');
+    await waitForTags(page, ['mdui-text-field', 'mdui-button']);
+    await expect(page.locator('h1')).toHaveText('找回密码');
+    await expect(page.locator('form mdui-text-field')).toHaveCount(4);
+    await page.locator('mdui-text-field[name="code"] input').fill('123456');
+    const value = await page
+      .locator('mdui-text-field[name="code"]')
+      .evaluate((el) => (el as HTMLElement & { value: string }).value);
+    expect(value).toBe('123456');
+    await expect(page.locator('mdui-button[type="submit"]')).toContainText('重置密码');
+  });
+
+  test('批量迁移：认证页禁用 JS 时正文与链接仍可读', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    for (const path of ['/login', '/register', '/forgot-password']) {
+      const response = await page.goto(path);
+      expect(response?.status()).toBe(200);
+      expect(await page.locator('h1').count()).toBe(1);
+      expect(await page.locator('mdui-button').count()).toBeGreaterThan(0);
+      expect(await page.locator('mdui-text-field').count()).toBeGreaterThan(0);
+    }
+    await context.close();
+  });
 });

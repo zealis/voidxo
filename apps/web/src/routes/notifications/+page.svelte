@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import {
     EngagementRequestError,
     deleteNotifications,
@@ -69,8 +69,8 @@
     <h1>通知</h1>
     <div class="head-actions">
       <span class="unread">未读 {data.unread}</span>
-      <Button variant="outlined" onclick={markAll} disabled={pending || data.unread === 0}>全部已读</Button>
-      <Button variant="text" onclick={removeAll} disabled={pending || data.notifications.length === 0}>删除全部</Button>
+      <VxButton variant="outlined" onclick={markAll} disabled={pending || data.unread === 0}>全部已读</VxButton>
+      <VxButton variant="text" onclick={removeAll} disabled={pending || data.notifications.length === 0}>删除全部</VxButton>
     </div>
   </div>
 

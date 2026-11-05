@@ -1,8 +1,10 @@
 <script lang="ts">
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
+  import VxTextField from '#lib/components/ui/VxTextField.svelte';
   import { AuthRequestError } from '#lib/api/auth.js';
   import { resetPassword, sendEmailCode } from '#lib/api/account.js';
 
+  // 认证类页面第二批迁移：布局、信息密度、文案规则保持不变。
   let email = $state('');
   let code = $state('');
   let password = $state('');
@@ -84,30 +86,26 @@
     {:else}
       <form onsubmit={submit} novalidate>
         <div class="field">
-          <label for="email">注册邮箱</label>
-          <input id="email" name="email" type="email" autocomplete="email" bind:value={email} required />
+          <VxTextField label="注册邮箱" name="email" type="email" autocomplete="email" required bind:value={email} />
         </div>
         <div class="field">
-          <label for="code">邮箱验证码</label>
           <div class="code-row">
-            <input id="code" name="code" type="text" inputmode="numeric" maxlength="6" autocomplete="one-time-code" bind:value={code} required />
-            <Button type="button" variant="outlined" disabled={sending || countdown > 0} onclick={sendCode}>
+            <VxTextField label="邮箱验证码" name="code" inputmode="numeric" maxlength={6} autocomplete="one-time-code" required bind:value={code} />
+            <VxButton type="button" variant="outlined" disabled={sending || countdown > 0} onclick={sendCode}>
               {countdown > 0 ? `${countdown} 秒后重发` : sending ? '发送中…' : '发送验证码'}
-            </Button>
+            </VxButton>
           </div>
         </div>
         <div class="field">
-          <label for="password">新密码</label>
-          <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" bind:value={password} required />
+          <VxTextField label="新密码" name="password" type="password" autocomplete="new-password" minlength={8} required bind:value={password} />
           <span class="hint">至少 8 个字符</span>
         </div>
         <div class="field">
-          <label for="confirm">确认新密码</label>
-          <input id="confirm" name="confirm" type="password" autocomplete="new-password" bind:value={confirm} required />
+          <VxTextField label="确认新密码" name="confirm" type="password" autocomplete="new-password" required bind:value={confirm} />
         </div>
         {#if notice}<p class="form-notice" role="status">{notice}</p>{/if}
         {#if errorMessage}<p class="form-error" role="alert">{errorMessage}</p>{/if}
-        <Button type="submit" disabled={loading}>重置密码</Button>
+        <VxButton type="submit" disabled={loading}>重置密码</VxButton>
       </form>
     {/if}
   </section>
@@ -130,22 +128,9 @@
   h1 { margin: 0 0 var(--vx-space-6); font-size: 24px; font-weight: 500; }
   form { display: grid; gap: var(--vx-space-4); }
   .field { display: grid; gap: var(--vx-space-1); }
-  label { color: var(--vx-color-text-secondary); font-size: 12px; }
-  input {
-    min-height: var(--vx-input-height);
-    padding: 0 var(--vx-space-3);
-    color: var(--vx-color-text-primary);
-    background: var(--vx-color-surface);
-    border: 1px solid var(--vx-color-border);
-    border-radius: var(--vx-radius-control);
-  }
-  input:focus-visible {
-    border-color: var(--vx-color-text-primary);
-    outline: 2px solid var(--vx-color-focus);
-    outline-offset: 1px;
-  }
   .code-row { display: flex; gap: var(--vx-space-2); align-items: center; }
-  .code-row input { flex: 1; }
+  .code-row :global(mdui-text-field) { flex: 1; min-width: 0; }
+  .code-row :global(mdui-button) { flex-shrink: 0; }
   .hint { color: var(--vx-color-text-secondary); font-size: 11px; }
   .form-error { color: var(--vx-color-error); font-size: 12px; }
   .form-notice { color: var(--vx-color-text-secondary); font-size: 12px; }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { AdminRequestError, updateOptions, type AdminOption } from '#lib/api/admin.js';
   import type { PageProps } from './$types';
 
@@ -78,7 +78,7 @@
     <h1>配置</h1>
     <div class="actions">
       {#if changed.length > 0}<span class="muted">待保存 {changed.length} 项</span>{/if}
-      <Button disabled={pending || changed.length === 0} onclick={save}>保存修改</Button>
+      <VxButton disabled={pending || changed.length === 0} onclick={save}>保存修改</VxButton>
     </div>
   </div>
 

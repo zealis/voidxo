@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import Avatar from '#lib/components/Avatar.svelte';
   import Icon from '#lib/components/Icon.svelte';
   import CommentSection from '#lib/components/CommentSection.svelte';
@@ -128,7 +128,7 @@
 {#if data.loadError}
   <div class="error-message" role="alert">
     <span>问题加载失败，请刷新重试。</span>
-    <Button variant="outlined" onclick={() => location.reload()}>重试</Button>
+    <VxButton variant="outlined" onclick={() => location.reload()}>重试</VxButton>
   </div>
 {:else if data.question}
   <article class="vx-card vx-card--shadow question" aria-labelledby="question-title">
@@ -191,8 +191,8 @@
                 <label class="vx-visually-hidden" for={`answer-edit-${answer.id}`}>编辑回答</label>
                 <textarea id={`answer-edit-${answer.id}`} rows="6" maxlength="200000" bind:value={answerDraft} required></textarea>
                 <div class="form-actions">
-                  <Button type="submit" disabled={actionPending}>保存</Button>
-                  <Button type="button" variant="text" onclick={() => (editingAnswerId = null)}>取消</Button>
+                  <VxButton type="submit" disabled={actionPending}>保存</VxButton>
+                  <VxButton type="button" variant="text" onclick={() => (editingAnswerId = null)}>取消</VxButton>
                 </div>
               </form>
             {:else}
@@ -221,7 +221,7 @@
         <textarea id="answer-content" rows="6" maxlength="200000" bind:value={answerContent} required></textarea>
         {#if answerError}<p class="form-error" role="alert">{answerError}</p>{/if}
         <div class="form-actions">
-          <Button type="submit" disabled={answerSaving}>发布回答</Button>
+          <VxButton type="submit" disabled={answerSaving}>发布回答</VxButton>
         </div>
       </form>
     {/if}

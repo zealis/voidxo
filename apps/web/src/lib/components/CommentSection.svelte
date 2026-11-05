@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation';
-  import Button from './ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import type { AuthUser } from '#lib/api/auth.js';
   import { ContentRequestError, createComment, deleteComment, type CommentItem } from '#lib/api/content.js';
 
@@ -114,7 +114,7 @@
             <form class="reply-form" onsubmit={(event) => submit(event, item.id)} novalidate>
               <label class="sr-only" for={`reply-${item.id}`}>回复 {item.username}</label>
               <input id={`reply-${item.id}`} maxlength="1000" bind:value={replyContent} required placeholder={`回复 ${item.username}`} />
-              <Button type="submit" variant="outlined" disabled={pending}>发送</Button>
+              <VxButton type="submit" variant="outlined" disabled={pending}>发送</VxButton>
             </form>
           {/if}
         </li>
@@ -127,7 +127,7 @@
       <label for="comment-content">写评论</label>
       <textarea id="comment-content" rows="3" maxlength="1000" bind:value={content} required></textarea>
       <div class="form-actions">
-        <Button type="submit" disabled={pending}>发表评论</Button>
+        <VxButton type="submit" disabled={pending}>发表评论</VxButton>
       </div>
     </form>
   {:else}

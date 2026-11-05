@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { createQuestion, ContentRequestError } from '#lib/api/content.js';
   import type { PageProps } from './$types';
 
@@ -48,7 +48,7 @@
     {#if data.loadError}
       <div class="error-message" role="alert">
         <span>编辑环境加载失败，请刷新重试。</span>
-        <Button variant="outlined" onclick={() => location.reload()}>重试</Button>
+        <VxButton variant="outlined" onclick={() => location.reload()}>重试</VxButton>
       </div>
     {:else}
       <form onsubmit={submit} novalidate>
@@ -77,7 +77,7 @@
         </fieldset>
         {#if errorMessage}<p class="form-error" role="alert">{errorMessage}</p>{/if}
         <div class="form-actions">
-          <Button type="submit" disabled={saving || data.topics.length === 0}>发布</Button>
+          <VxButton type="submit" disabled={saving || data.topics.length === 0}>发布</VxButton>
         </div>
       </form>
     {/if}

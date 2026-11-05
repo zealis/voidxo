@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import Avatar from '#lib/components/Avatar.svelte';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { findRecipient, InboxRequestError } from '#lib/api/inbox.js';
   import type { PageProps } from './$types';
 
@@ -58,7 +58,7 @@
       autocomplete="off"
       required
     />
-    <Button type="submit" variant="outlined" disabled={pending}>打开会话</Button>
+    <VxButton type="submit" variant="outlined" disabled={pending}>打开会话</VxButton>
   </form>
   {#if error}<p class="error" role="alert">{error}</p>{/if}
   {#if data.loadError}<p class="error" role="alert">会话列表加载失败，请稍后刷新。</p>{/if}

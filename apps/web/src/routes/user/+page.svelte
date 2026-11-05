@@ -3,7 +3,7 @@
   import { goto, invalidateAll } from '$app/navigation';
   import { MediaRequestError, uploadAvatar } from '#lib/api/media.js';
   import Avatar from '#lib/components/Avatar.svelte';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { AuthRequestError, changePassword } from '#lib/api/auth.js';
   import { updateProfile } from '#lib/api/profile.js';
   import type { PageProps } from './$types';
@@ -128,7 +128,7 @@
     {#if data.loadError}
       <div class="error-message" role="alert">
         <span>资料加载失败，请刷新重试。</span>
-        <Button variant="outlined" onclick={() => window.location.reload()}>重试</Button>
+        <VxButton variant="outlined" onclick={() => window.location.reload()}>重试</VxButton>
       </div>
     {:else if data.profile}
       <form onsubmit={save} novalidate>
@@ -153,7 +153,7 @@
           <input id="location" maxlength="255" bind:value={place} />
         </div>
         <div class="form-actions">
-          <Button type="submit" disabled={saving}>保存</Button>
+          <VxButton type="submit" disabled={saving}>保存</VxButton>
           {#if message}<span class="success-message" role="status">{message}</span>{/if}
           {#if errorMessage}<span class="form-error" role="alert">{errorMessage}</span>{/if}
         </div>
@@ -174,7 +174,7 @@
             <input id="confirm-password" type="password" minlength="8" maxlength="128" autocomplete="new-password" bind:value={confirmPassword} required />
           </div>
           <div class="form-actions">
-            <Button type="submit" disabled={passwordSaving}>更新密码</Button>
+            <VxButton type="submit" disabled={passwordSaving}>更新密码</VxButton>
             {#if passwordError}<span class="form-error" role="alert">{passwordError}</span>{/if}
           </div>
         </form>

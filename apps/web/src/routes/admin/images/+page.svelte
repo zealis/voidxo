@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
   import AdminPager from '#lib/components/admin/AdminPager.svelte';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { AdminRequestError, deleteImage, type AdminImage } from '#lib/api/admin.js';
   import type { PageProps } from './$types';
 
@@ -64,7 +64,7 @@
           <option {value} selected={data.deleted === value}>{label}</option>
         {/each}
       </select>
-      <Button type="submit" variant="outlined">筛选</Button>
+      <VxButton type="submit" variant="outlined">筛选</VxButton>
     </form>
   </div>
 
@@ -85,7 +85,7 @@
             {#if image.deleted}
               <span class="meta">已删除</span>
             {:else}
-              <Button variant="text" disabled={pendingKey === image.key} onclick={() => remove(image)}>删除</Button>
+              <VxButton variant="text" disabled={pendingKey === image.key} onclick={() => remove(image)}>删除</VxButton>
             {/if}
           </div>
         </figcaption>

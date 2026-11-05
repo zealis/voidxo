@@ -18,6 +18,10 @@
     variant?: 'filled' | 'outlined';
     placeholder?: string;
     autocomplete?: string;
+    maxlength?: number;
+    minlength?: number;
+    inputmode?: 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
+    pattern?: string;
     helper?: string;
     error?: string;
     disabled?: boolean;
@@ -35,6 +39,10 @@
     variant = 'outlined',
     placeholder,
     autocomplete,
+    maxlength,
+    minlength,
+    inputmode,
+    pattern,
     helper,
     error,
     disabled = false,
@@ -78,6 +86,10 @@
   {variant}
   {placeholder}
   {autocomplete}
+  {maxlength}
+  {minlength}
+  {inputmode}
+  {pattern}
   {helper}
   {error}
   oninput={syncFromEvent}

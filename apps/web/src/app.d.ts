@@ -33,6 +33,10 @@ type MduiTextFieldAttributes = HTMLAttributes<HTMLElement> & {
   helper?: string;
   error?: string;
   autocomplete?: string;
+  maxlength?: number;
+  minlength?: number;
+  inputmode?: string;
+  pattern?: string;
   disabled?: boolean;
   readonly?: boolean;
   required?: boolean;

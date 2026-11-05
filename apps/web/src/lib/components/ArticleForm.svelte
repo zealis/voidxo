@@ -1,6 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import Button from './ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { MediaRequestError, uploadContentImage } from '#lib/api/media.js';
   import type { Topic } from '#lib/api/content.js';
 
@@ -111,7 +111,7 @@
 
   {#if error}<p class="form-error" role="alert">{error}</p>{/if}
   <div class="form-actions">
-    <Button type="submit" disabled={pending}>{submitLabel}</Button>
+    <VxButton type="submit" disabled={pending}>{submitLabel}</VxButton>
   </div>
 </form>
 

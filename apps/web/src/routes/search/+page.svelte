@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import type { PageProps } from './$types';
 
   let { data }: PageProps = $props();
@@ -34,7 +34,7 @@
       <option value="article" selected={data.kind === 'article'}>文章</option>
       <option value="topic" selected={data.kind === 'topic'}>话题</option>
     </select>
-    <Button type="submit">搜索</Button>
+    <VxButton type="submit">搜索</VxButton>
   </form>
 
   {#if data.errorMessage}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
   import AdminPager from '#lib/components/admin/AdminPager.svelte';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { AdminRequestError, updateUser, type AdminUser } from '#lib/api/admin.js';
   import type { PageProps } from './$types';
 
@@ -77,7 +77,7 @@
         <option value="active" selected={data.status === 'active'}>正常</option>
         <option value="disabled" selected={data.status === 'disabled'}>已停用</option>
       </select>
-      <Button type="submit" variant="outlined">筛选</Button>
+      <VxButton type="submit" variant="outlined">筛选</VxButton>
     </form>
   </div>
 
@@ -127,13 +127,13 @@
             </td>
             <td class="muted">{user.created_at.slice(0, 10)}</td>
             <td>
-              <Button
+              <VxButton
                 variant="text"
                 disabled={pendingId === user.id}
                 onclick={() => toggleStatus(user)}
               >
                 {user.status === 1 && !user.disabled_at ? '停用' : '启用'}
-              </Button>
+              </VxButton>
             </td>
           </tr>
         {:else}

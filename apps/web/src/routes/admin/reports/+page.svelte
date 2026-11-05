@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
   import AdminPager from '#lib/components/admin/AdminPager.svelte';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { AdminRequestError, resolveReport, type AdminReport } from '#lib/api/admin.js';
   import type { PageProps } from './$types';
 
@@ -64,7 +64,7 @@
         {/each}
         <option value="" selected={data.status === ''}>全部</option>
       </select>
-      <Button type="submit" variant="outlined">筛选</Button>
+      <VxButton type="submit" variant="outlined">筛选</VxButton>
     </form>
   </div>
 
@@ -99,8 +99,8 @@
             <td class="muted">{report.created_at.slice(0, 10)}</td>
             <td class="actions">
               {#if report.status === 'pending'}
-                <Button variant="text" disabled={pendingId === report.id} onclick={() => handle(report, 'resolved')}>处理</Button>
-                <Button variant="text" disabled={pendingId === report.id} onclick={() => handle(report, 'rejected')}>驳回</Button>
+                <VxButton variant="text" disabled={pendingId === report.id} onclick={() => handle(report, 'resolved')}>处理</VxButton>
+                <VxButton variant="text" disabled={pendingId === report.id} onclick={() => handle(report, 'rejected')}>驳回</VxButton>
               {:else}
                 <span class="muted">—</span>
               {/if}

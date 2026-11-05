@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
   import AdminPager from './AdminPager.svelte';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import { AdminRequestError, deleteContent, type AdminContentItem, type ContentKind } from '#lib/api/admin.js';
 
   let {
@@ -74,7 +74,7 @@
           <option {value} selected={deleted === value}>{text}</option>
         {/each}
       </select>
-      <Button type="submit" variant="outlined">筛选</Button>
+      <VxButton type="submit" variant="outlined">筛选</VxButton>
     </form>
   </div>
 
@@ -119,7 +119,7 @@
             <td class="muted">{item.created_at.slice(0, 10)}</td>
             <td>
               {#if !item.deleted}
-                <Button variant="text" disabled={pendingId === item.id} onclick={() => remove(item)}>删除</Button>
+                <VxButton variant="text" disabled={pendingId === item.id} onclick={() => remove(item)}>删除</VxButton>
               {:else}
                 <span class="muted">—</span>
               {/if}

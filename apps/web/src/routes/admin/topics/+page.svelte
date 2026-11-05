@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
   import AdminPager from '#lib/components/admin/AdminPager.svelte';
-  import Button from '#lib/components/ui/Button.svelte';
+  import VxButton from '#lib/components/ui/VxButton.svelte';
   import {
     AdminRequestError,
     createTopic,
@@ -83,7 +83,7 @@
         <input type="checkbox" name="include_deleted" value="1" checked={data.includeDeleted} />
         含已删除
       </label>
-      <Button type="submit" variant="outlined">筛选</Button>
+      <VxButton type="submit" variant="outlined">筛选</VxButton>
     </form>
   </div>
 
@@ -95,7 +95,7 @@
     <h2>新建话题</h2>
     <input type="text" bind:value={name} maxlength="20" placeholder="话题名称（1–20 字）" required aria-label="话题名称" />
     <textarea bind:value={description} maxlength="1000" rows="2" placeholder="话题描述（可选）" aria-label="话题描述"></textarea>
-    <Button type="submit" disabled={pending}>创建</Button>
+    <VxButton type="submit" disabled={pending}>创建</VxButton>
   </form>
 
   <div class="table-wrap">
@@ -134,11 +134,11 @@
               {#if topic.deleted}
                 <span class="muted">—</span>
               {:else if editingId === topic.id}
-                <Button variant="text" disabled={pending} onclick={() => saveEdit(topic)}>保存</Button>
-                <Button variant="text" disabled={pending} onclick={cancelEdit}>取消</Button>
+                <VxButton variant="text" disabled={pending} onclick={() => saveEdit(topic)}>保存</VxButton>
+                <VxButton variant="text" disabled={pending} onclick={cancelEdit}>取消</VxButton>
               {:else}
-                <Button variant="text" disabled={pending} onclick={() => startEdit(topic)}>编辑</Button>
-                <Button variant="text" disabled={pending} onclick={() => remove(topic)}>删除</Button>
+                <VxButton variant="text" disabled={pending} onclick={() => startEdit(topic)}>编辑</VxButton>
+                <VxButton variant="text" disabled={pending} onclick={() => remove(topic)}>删除</VxButton>
               {/if}
             </td>
           </tr>
