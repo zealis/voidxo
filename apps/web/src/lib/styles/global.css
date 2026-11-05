@@ -1,0 +1,118 @@
+@layer reset, tokens, base, components, utilities, overrides;
+@import '../tokens/source.css';
+@import '../tokens/semantic.css';
+@import '../tokens/components.css';
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  body, h1, h2, h3, h4, p, figure, blockquote { margin: 0; }
+  ul, ol { margin: 0; padding: 0; list-style: none; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  img { max-width: 100%; }
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    min-width: 320px;
+    color: var(--vx-color-text-primary);
+    font-family: var(--vx-font-family);
+    font-size: var(--vx-font-size-body);
+    line-height: var(--vx-line-height-body);
+    background: var(--vx-color-bg);
+  }
+  a { color: inherit; text-decoration: none; }
+  ::selection { color: var(--vx-color-text-primary); background: var(--vx-color-primary-soft); }
+  :focus-visible { outline: 2px solid var(--vx-color-primary); outline-offset: 2px; }
+  /* 固定导航不遮挡锚点与键盘焦点。 */
+  :target { scroll-margin-top: calc(var(--vx-layout-appbar) + var(--vx-space-4)); }
+}
+
+@layer components {
+  /* 旧站 .mdui-container 实测：1100 上限，600 起收窄，1024 起加大上下留白。 */
+  .vx-container {
+    width: 100%;
+    max-width: var(--vx-layout-content);
+    margin: 0 auto;
+    padding: var(--vx-space-2) 0 62px;
+  }
+  .vx-container--list { max-width: var(--vx-layout-list); }
+  .vx-container--detail { max-width: 846px; }
+  @media (min-width: 600px) {
+    .vx-container { width: 96%; padding-top: var(--vx-space-4); }
+  }
+  @media (min-width: 1024px) {
+    .vx-container { padding: var(--vx-space-6) var(--vx-space-2) 62px; }
+  }
+
+  /* 旧站 .mdui-card：1px 描边 + 8px 圆角；需要浮起时用 --shadow。 */
+  .vx-card {
+    background: var(--vx-color-surface);
+    border: 1px solid var(--vx-color-border);
+    border-radius: var(--vx-radius-card);
+  }
+  .vx-card--shadow { border-color: transparent; box-shadow: var(--vx-shadow-card); }
+
+  .vx-divider { height: 0; border: 0; border-top: 1px solid var(--vx-color-divider); }
+
+  .vx-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    color: var(--vx-color-text-secondary);
+    background: transparent;
+    border: 0;
+    border-radius: var(--vx-radius-pill);
+    cursor: pointer;
+    transition: background-color var(--vx-motion-standard) var(--vx-motion-easing);
+  }
+  .vx-icon-button:hover { background: var(--vx-color-surface-hover); }
+  .vx-icon-button[aria-pressed='true'] { color: var(--vx-color-primary); }
+
+  .vx-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .vx-empty { padding: var(--vx-space-6) var(--vx-space-4); color: var(--vx-color-text-tertiary); font-size: var(--vx-font-size-small); text-align: center; }
+
+  /* 兼容既有页面类名，后续逐步收敛到 vx-* 前缀。 */
+  .page-container {
+    width: 100%;
+    max-width: var(--vx-layout-content);
+    margin: 0 auto;
+    padding: var(--vx-space-4) var(--vx-space-2) 62px;
+  }
+  .inline-error { color: var(--vx-color-error); font-size: var(--vx-font-size-caption); }
+  .error-message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--vx-space-4);
+    padding: var(--vx-space-3) 0;
+    border-bottom: 1px solid var(--vx-color-border);
+  }
+  .empty-state { padding: var(--vx-space-8) 0; }
+  .empty-state h1 { margin-bottom: var(--vx-space-4); font-size: var(--vx-font-size-headline); font-weight: 500; }
+  .empty-state p { color: var(--vx-color-text-secondary); }
+}
+
+@layer utilities {
+  .vx-clamp-1 { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .vx-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+}
+
+@layer overrides {
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto; animation: none; transition: none; }
+  }
+}

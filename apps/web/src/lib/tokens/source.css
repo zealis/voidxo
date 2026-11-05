@@ -1,0 +1,82 @@
+@layer tokens {
+  :root {
+    /* 来源：旧后台 initializer/index.less、appbar/index.less 与 mdui variable.less。 */
+    --vx-source-surface: #fff;
+    --vx-source-code-surface: #f6f6f6;
+    --vx-source-text: rgba(0, 0, 0, 0.87);
+    --vx-source-text-secondary: rgba(0, 0, 0, 0.54);
+    --vx-source-border: rgba(100, 121, 143, 0.122);
+    --vx-source-control-border: rgba(0, 0, 0, 0.12);
+    --vx-source-error: #b3261e;
+    --vx-source-space-1: 4px;
+    --vx-source-space-2: 8px;
+    --vx-source-space-3: 12px;
+    --vx-source-space-4: 16px;
+    --vx-source-space-6: 24px;
+    --vx-source-space-8: 32px;
+    --vx-source-font-size: 14px;
+    --vx-source-radius-control: 4px;
+    --vx-source-content-width: 1100px;
+    --vx-source-motion-standard: 200ms;
+
+    /* 以下取值来自 http://mdbbs/ 旧站 CSS 与模板实测。 */
+    --vx-source-primary: #1a73e8;
+    --vx-source-primary-soft: #e8f0fe;
+    /* 旧站 .mc-drawer .mdui-list-item-active 选中底色，按 2026-11-05 设计决定改中性灰。 */
+    --vx-source-nav-active-bg: #f2f2f2;
+    --vx-source-surface-subtle: #f1f3f4;
+    --vx-source-surface-hover: rgba(0, 0, 0, 0.04);
+    --vx-source-surface-active: #eeeeee;
+    --vx-source-text-tertiary: rgba(0, 0, 0, 0.38);
+    --vx-source-divider: rgba(0, 0, 0, 0.08);
+    --vx-source-radius-xs: 4px;
+    --vx-source-radius-card: 8px;
+    --vx-source-radius-pill: 9999px;
+    --vx-source-shadow-card: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    /* 液态玻璃顶栏：半透明表面 + 背后模糊饱和，替代旧站实体阴影。
+       控件级玻璃（搜索框）在顶栏之上再叠一层淡色 tint，
+       浅色近似旧站 #f1f3f4、深色近似 #424242 的透明版。 */
+    --vx-source-surface-glass: rgba(255, 255, 255, 0.72);
+    --vx-source-surface-glass-control: hsla(0, 0%, 0%, 0.05);
+    --vx-source-blur-glass: 24px;
+    --vx-source-shadow-overlay: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    --vx-source-space-5: 20px;
+    --vx-source-space-10: 40px;
+    --vx-source-space-12: 48px;
+    --vx-source-font-size-caption: 12px;
+    --vx-source-font-size-small: 13px;
+    --vx-source-font-size-subtitle: 16px;
+    --vx-source-font-size-title: 20px;
+    --vx-source-font-size-headline: 24px;
+    --vx-source-line-height-body: 1.5;
+    --vx-source-layout-content: 1100px;
+    --vx-source-layout-list: 800px;
+    --vx-source-layout-appbar: 64px;
+    --vx-source-layout-drawer: 240px;
+    --vx-source-motion-emphasized: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* 深色主题取值来自 http://mdbbs/ 实测（mdui-theme-layout-dark）与旧站编译 CSS：
+     body/appbar #303030，选中项与搜索框底 #424242，主题色 #8ab4f8，
+     分隔线与卡片描边 hsla(0,0%,100%,.12)，hover hsla(0,0%,100%,.04)。 */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --vx-source-surface: #303030;
+      --vx-source-surface-subtle: #424242;
+      --vx-source-surface-hover: hsla(0, 0%, 100%, 0.04);
+      --vx-source-surface-active: #424242;
+      --vx-source-text: #ffffff;
+      --vx-source-text-secondary: hsla(0, 0%, 100%, 0.7);
+      --vx-source-text-tertiary: hsla(0, 0%, 100%, 0.5);
+      --vx-source-border: hsla(0, 0%, 100%, 0.12);
+      --vx-source-divider: hsla(0, 0%, 100%, 0.12);
+      --vx-source-primary: #8ab4f8;
+      --vx-source-primary-soft: rgba(138, 180, 248, 0.16);
+      /* 深色选中项实测：白字 #424242 底（非主题蓝）。 */
+      --vx-source-nav-active-bg: #424242;
+      --vx-source-surface-glass: rgba(48, 48, 48, 0.72);
+      --vx-source-surface-glass-control: hsla(0, 0%, 100%, 0.08);
+      --vx-source-error: #f2b8b5;
+    }
+  }
+}

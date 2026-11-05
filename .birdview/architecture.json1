@@ -1,0 +1,1952 @@
+{
+  "schemaVersion": 1,
+  "language": "zh",
+  "mapId": "voidxo-refactor-blueprint",
+  "revision": 3,
+  "project": {
+    "id": "voidxo",
+    "name": "VOIDXO · 由 MDClub 重构的目标架构（功能分区保持）"
+  },
+  "constraintDiscovery": {
+    "checkedAt": "2026-11-04T14:48:48Z",
+    "checkedPaths": [
+      "设计文档/VOIDXO_开发技术规范_V2.0.md",
+      "设计文档/VOIDXO_前端_UI_设计规范_V1.0.md",
+      "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+      "设计文档/llms-full.txt",
+      "之前的项目/mdclub-v1.0.2/composer.json",
+      "之前的项目/mdclub-v1.0.2/config/config.default.php",
+      "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+      "之前的项目/mdclub-v1.0.2/src/Route/Home.php",
+      "之前的项目/mdclub-v1.0.2/mdclub.sql",
+      "之前的项目/mdclub-admin-1.0.0/package.json",
+      "之前的项目/mdclub-admin-1.0.0/src/admin.php",
+      "之前的项目/mdclub-admin-1.0.0/src/initializer/view.jsx",
+      "之前的项目/mdclub-admin-1.0.0/build/config.js",
+      "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+      "设计文档/关于架构图第一版缺陷.md"
+    ],
+    "uninspectedPaths": [
+      "之前的项目/mdclub-v1.0.2/vendor",
+      "之前的项目/mdclub-v1.0.2/src/Library",
+      "之前的项目/mdclub-v1.0.2/src/Validator",
+      "之前的项目/mdclub-v1.0.2/templates/material",
+      "之前的项目/mdclub-admin-1.0.0/src/vendor"
+    ]
+  },
+  "constraints": [
+    {
+      "id": "keep-partitions-rename",
+      "name": "整体功能分区不变，项目重命名为 VOIDXO",
+      "note": "本次任务的原始要求：以 MDClub 现有功能分区为边界重构，不新增或删减业务板块；品牌名由 mdclub 改为 voidxo。旧系统的 API 分区（stats/token/option/user/topic/question/answer/article/comment/report/inbox/notification/captcha/email/image）与后台十个页面分区构成保持不变的清单。",
+      "origin": "user",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "project",
+      "modules": [],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 56,
+          "endLine": 70,
+          "note": "旧系统 /api 下 15 个业务分区注册顺序，是功能分区的基线。"
+        },
+        {
+          "path": "之前的项目/mdclub-admin-1.0.0/src/initializer/view.jsx",
+          "line": 62,
+          "endLine": 98,
+          "note": "后台 10 条路由：answers/articles/comments/index/options/questions/reports/topics/users。"
+        }
+      ],
+      "verification": "重构后逐个比对分区清单、API 路径与后台菜单，确认无分区合并、拆分或缺失。"
+    },
+    {
+      "id": "stack-sveltekit-go",
+      "name": "目标栈为 SvelteKit + Svelte + TypeScript 前端与 Go 后端，模块化单体优先",
+      "note": "开发技术规范 V2.0 的选型表与目录结构，组件库规范 V2.0 进一步把前端固定为 SvelteKit + Svelte + TypeScript。旧 PHP/Slim + Medoo 与 Hyperapp + mdui 1 均属于被替换的实现，不是新系统的依赖。 前端组件实现基线以 V2.1 为准；Go 中不存在 PDO，分层统一表述为 Handler → Service → Repository。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "web-app",
+        "admin-app",
+        "ui-system",
+        "api-gateway",
+        "repository"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 47,
+          "endLine": 57,
+          "note": "技术方向表：SvelteKit/Svelte 前端、Go 后端、SQLite/MySQL/PostgreSQL 长期兼容。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 226,
+          "endLine": 263,
+          "note": "建议目录结构：apps/web、apps/api、cmd/api、cmd/worker、internal/modules/*。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 8,
+          "endLine": 11,
+          "note": "前端框架：SvelteKit + Svelte + TypeScript；组件策略：自研 VOIDXO 组件库。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 2 章前端分层架构与后端边界：业务逻辑不重复放进 SvelteKit。"
+        }
+      ],
+      "verification": "检查新仓库 go.mod、SvelteKit 配置与模块目录；确认不存在 PHP 运行时与 Hyperapp/mdui 依赖。"
+    },
+    {
+      "id": "no-ui-runtime-dependency",
+      "name": "不引入 mdui / Material Web Components 作为运行时依赖，使用自研 VOIDXO 组件库",
+      "note": "组件库规范 V2.0 是较新且明确覆盖了 UI 设计规范 V1.0 中对 Material Web Components 的运行时采用建议；mdui 文档（llms-full.txt）仅作为 API、状态与可访问性研究资料。 目的：避免 UI 框架限制产品的视觉和交互；本次已同步修订开发技术规范 V2.0 的选型表、4.3 节与附录 A，以及 UI 设计规范 V1.0 第 12 章，三份文档不再互相矛盾。前端工程细节以 V2.1 为准。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "ui-system",
+        "web-app",
+        "admin-app"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 19,
+          "endLine": 21,
+          "note": "「VOIDXO 不直接依赖 mdui，也不将其他 UI 库作为运行时组件依赖」。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 96,
+          "endLine": 112,
+          "note": "不安装、不引入、不依赖 mdui 运行时组件；仅参考组件职责与状态模型。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 696,
+          "endLine": 699,
+          "note": "代码质量约束再次明确不引入 mdui 作为运行时依赖。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 1.1 节规范优先级与第 1.2 节四条原则：明确废止 Material Web Components 运行时选型。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷文档第 68-70 行：开发技术规范仍写 Material Web Components，必须以组件库规范为准统一。"
+        }
+      ],
+      "verification": "检查前端 package.json 与构建产物，确认无 mdui/@material/web 运行时包；Token 与组件由仓库内自研实现。 同时核对三份规范表述一致，无残留运行时集成要求。"
+    },
+    {
+      "id": "visual-baseline-and-tokens",
+      "name": "重构底层不改视觉；Token 从现有样式提取，统一 --vx- 前缀",
+      "note": "必须先建立现状截图与样式基线，保持品牌、布局、导航、信息密度与交互流程；三层 Token（Source/Semantic/Component）从现有值提取，不凭空造值。 冲突裁决规则：以 Material Design 3 为主、Apple 风格为辅，冲突时以 MD3 为准；顺序为可访问性与交互正确性 > MD3 组件与状态规范 > VOIDXO 信息架构 > Apple 视觉表达 > 装饰效果。顺序上先保持视觉一致，再逐步统一代码，不借重构之名重新设计。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "ui-system",
+        "web-app",
+        "admin-app"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 23,
+          "endLine": 34,
+          "note": "必须保持不变：品牌识别、布局与导航、视觉层级、组件尺寸与状态、交互流程与文案含义。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 221,
+          "endLine": 277,
+          "note": "提取现有值而非创造新值；三层 Token；统一 --vx- 前缀。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 611,
+          "endLine": 628,
+          "note": "视觉回归对照重构前截图，允许修缺陷，不允许未经批准的视觉变化。"
+        },
+        {
+          "path": "设计文档/VOIDXO_前端_UI_设计规范_V1.0.md",
+          "note": "第 1.3 节冲突处理优先级：MD3 优先于 Apple 风格，可访问性优先于一切视觉表达。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 1.2 节四条原则与第 5.1 节 Token 提取原则。"
+        }
+      ],
+      "verification": "对照桌面/移动端、浅色/深色截图做视觉回归；检查组件内无硬编码主题色与未使用 Token。 抽查冲突裁决记录，确认没有以 Apple 风格或 mdui 默认主题覆盖 MD3 语义。"
+    },
+    {
+      "id": "db-source-of-truth",
+      "name": "数据库为事实来源；事务与 Outbox 保证缓存、索引、静态页一致",
+      "note": "缓存、静态页与搜索索引都是可重建副本；多表写入必须在事务内，Outbox 事件与业务数据同事务提交，提交成功后才触发缓存失效、页面再生成和索引更新。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "repository",
+        "database",
+        "cache",
+        "outbox-worker",
+        "delivery",
+        "search-recommend"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 26,
+          "endLine": 32,
+          "note": "设计原则第 3、4 条：数据库为事实来源，多表写操作必须在事务中完成。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 319,
+          "endLine": 337,
+          "note": "发帖、回复、删用户、改权限等必须事务保护；提交成功后才能触发缓存与索引更新。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 372,
+          "endLine": 398,
+          "note": "Transactional Outbox：事件同事务提交、消费者幂等、失败重试。"
+        }
+      ],
+      "verification": "写路径代码审查 + 集成测试：提交失败时无缓存/索引副作用，重复事件不产生重复结果。"
+    },
+    {
+      "id": "progressive-migration",
+      "name": "渐进式迁移、逐模块验收、可回滚，不做一次性全站替换",
+      "note": "阶段 0 现状冻结 → Token → 组件试点 → 组件扩展 → 页面渐进迁移 → 清理；保留旧实现与回滚路径直到验收通过。 重点是按组件和页面逐步替换，降低一次性重构风险，保留旧实现与回滚路径直到验收通过。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "project",
+      "modules": [],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 538,
+          "endLine": 610,
+          "note": "重构实施流程阶段 0-5，明确渐进迁移与回滚路径。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 874,
+          "endLine": 962,
+          "note": "MVP 五阶段开发顺序与验收标准。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 7.2 节渐进式迁移六步与逐批回滚点。"
+        }
+      ],
+      "verification": "每次迁移只覆盖一类组件或一个模块，并留存视觉、交互、响应式验收记录和回滚点。"
+    },
+    {
+      "id": "copywriting-rules",
+      "name": "并列文案统一使用中文中点 ·，删除冗余解释性文案",
+      "note": "强制规范，适用于页面标题、按钮、标签、菜单、通知、空状态、错误信息和所有可见 UI 文案；中点两侧各留一个空格，URL、代码、路径不替换。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "ui-system",
+        "web-app",
+        "admin-app"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 394,
+          "endLine": 467,
+          "note": "全局文案规则：分隔符统一、禁止冗余解释性描述、文案精简判断。"
+        }
+      ],
+      "verification": "全站文案走查与组件示例检查；必要错误原因、风险与隐私信息不得误删。"
+    },
+    {
+      "id": "pending-decisions-not-facts",
+      "name": "待决策事项不得视为既定事实",
+      "note": "首期主数据库、SQLite 是否用于生产、Redis 是否首期引入、搜索引擎方案、对象存储与 CDN 供应商、AI 模型、页面再生成实现、备份 RPO/RTO 均标记待决策；AI 标签与推荐在第一阶段暂时搁浅。 补充隐藏耦合：会话存储方案（签名 Cookie / 数据库 / Redis）未定，而 cache 的 Redis 首期是否引入同样是待决策项，两者必须同步决策，否则 user-auth 无法落地。另需决策：跨引擎全文检索方言差异的抽象方式、对象存储与 CDN 是否分别选型。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "project",
+      "modules": [],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 7,
+          "endLine": 7,
+          "note": "「尚未最终确定的技术选型均标记为待决策，不得在实现中擅自视为既定事实」。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 966,
+          "endLine": 982,
+          "note": "第 20 章待决策事项表。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 17,
+          "endLine": 18,
+          "note": "AI 推荐与头像在线状态标注暂时搁浅。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷一、3：会话存储方案缺失，是 pending-decisions 未列出的隐藏耦合。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 7.1 节 Redis 与会话辅助数据：会话存储需与 Redis 决策同步确定。"
+        }
+      ],
+      "verification": "实施前逐项确认决策结论并记录；未决策的模块保持可替换接口，不提前引入复杂基础设施。 会话存储方案需在 user-auth 落地前给出结论并记录。"
+    },
+    {
+      "id": "security-baseline",
+      "name": "安全基线：CSRF、IP 防伪造、隐藏文件屏蔽、Cookie 与上传路径",
+      "note": "第一版架构遗漏的三项硬性要求，与 Cookie 属性、上传路径安全合并为一条基线。Go API 使用 Cookie 认证时 CSRF 为必做项；访客 IP 默认取连接层远端地址，只有来自明确配置的可信反向代理才解析 Forwarded / X-Forwarded-For；屏蔽隐藏文件、配置文件、密钥文件和内部目录的外部访问；用户输入不得拼接为文件系统路径。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "api-gateway",
+        "user-auth",
+        "delivery",
+        "file-media",
+        "observability"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 12.1-12.5 节：身份认证、权限、Web 安全、IP 与代理信任、文件与路径安全。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷一、1：CSRF / 访客 IP 只读服务器原始地址 / 屏蔽隐藏文件在第一版 constraints 与 evidence 中均缺失，建议合并为 security-baseline。"
+        }
+      ],
+      "verification": "安全测试与代码审查：Cookie 状态变更请求带 CSRF 校验；伪造代理头不改变判定 IP；隐藏路径返回 404/403；上传路径穿越与目录逃逸用例被拒绝。"
+    },
+    {
+      "id": "no-n-plus-one",
+      "name": "禁止循环内数据库查询的 N+1 扩增",
+      "note": "列表与关联查询必须批量完成，禁止在循环内执行可批量化的数据库查询；高频查询建立并验证索引，列表接口使用稳定排序与分页上限。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "repository",
+        "api-gateway",
+        "observability"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 6.2 节数据库规范与第 14.1 节性能要求：禁止循环内执行可批量完成的数据库查询，防止 N+1。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷一、2：性能规范中的硬性条款未挂到 repository / observability / api-gateway。"
+        }
+      ],
+      "verification": "列表接口压测与 SQL 语句计数断言；用执行计划验证高频查询索引；慢查询日志纳入监控。"
+    },
+    {
+      "id": "client-data-cache",
+      "name": "客户端数据缓存与后台刷新能力",
+      "note": "客户端获取的数据必须提供统一缓存与后台刷新能力（SvelteKit load + SWR 语义），显式定义缓存键、TTL、失效、重试与去重；公开与私有数据使用不同策略，私有数据不进入公共缓存，缓存内容可从权威数据源重建。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "web-app",
+        "ui-system",
+        "delivery"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 7.1 节缓存层级新增条款：客户端数据缓存与后台刷新，缓存键/失效/重试/去重必须显式定义。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 4.1 节客户端数据缓存与后台刷新：公开数据复用 load 缓存并后台刷新，后台刷新不得覆盖用户编辑状态。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷一、4：第一版 web-app 与 ui-system 没有客户端缓存/后台刷新的 evidence。"
+        }
+      ],
+      "verification": "检查 load 缓存策略与缓存头；验证后台刷新不覆盖编辑态、缓存失败可降级、私有数据不出现在公共 CDN 缓存。"
+    },
+    {
+      "id": "ssr-state-isolation",
+      "name": "SSR 状态按请求隔离，Hydration 前后一致",
+      "note": "服务端禁止跨请求共享用户状态，不得把当前登录用户放进模块级全局 Store；服务端数据通过 load 与服务端接口获取；客户端状态与服务端状态明确区分；私有页面禁止进入公共 CDN 缓存；首屏内容不依赖 Hydration 后才出现。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "web-app",
+        "ui-system",
+        "delivery"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 4 章 SvelteKit SSR 状态隔离，明确请求上下文、load 数据来源、私有页缓存与 Hydration 一致性。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 4.1 节新增条款：用户状态按请求隔离，禁止模块级全局用户 Store。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷文档第二部分「3. 明确 SvelteKit 的 SSR 状态隔离」：服务端不能使用跨请求共享的用户状态。"
+        }
+      ],
+      "verification": "多用户并发 SSR 请求无数据串扰；模块顶层无浏览器 API 与全局用户 Store；检查私有页缓存头与 Hydration 无报错。"
+    },
+    {
+      "id": "component-impl-strategy",
+      "name": "组件底层实现：原生能力优先，按真实场景控制规模",
+      "note": "不是所有控件都从零实现：Input 封装原生 input、Select 优先原生 select、Checkbox/Radio 用原生控件封装、Dialog 优先基于原生 dialog、Menu 参考 mdui 交互；Button/Switch/Tabs/Tooltip/Toast 用 Svelte 自研。视觉与 API 自主控制，组件按真实使用场景渐进扩展，不提前开发没有使用场景的组件。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "ui-system"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 3 章组件底层实现策略表与第 7.1 节规模控制。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷文档「2. 增加组件底层实现策略」与「6. 控制组件库规模」。"
+        }
+      ],
+      "verification": "对照实现策略表审查各控件实现方式；组件库清单中每项均有真实页面调用点；无原生能力被无故重复实现。"
+    },
+    {
+      "id": "css-cascade-layers",
+      "name": "CSS Cascade Layers 与全局样式管理",
+      "note": "全局入口声明 @layer reset, tokens, base, components, utilities, overrides；所有全局设计值统一从 --vx- Token 获取，组件不直接写品牌色、不随意覆盖全局样式、禁止常规使用 !important；清理未使用样式并控制 CSS 体积。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "ui-system"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 5 章 Design Token 与 CSS 管理，含 Cascade Layers 声明与来源提取原则。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷文档「4. 完善 Token 和 CSS 管理」。"
+        }
+      ],
+      "verification": "检查层声明顺序、组件内无硬编码主题色、无常规 !important；构建产物 CSS 体积与未使用样式扫描。"
+    },
+    {
+      "id": "component-quality-gate",
+      "name": "组件质量门槛：类型、状态、键盘、无障碍与回归测试",
+      "note": "每个正式组件必须具备 TypeScript 类型、明确 Props 与事件、完整交互状态、键盘操作、无障碍支持、单元测试、桌面与移动端验证、视觉回归测试；Dialog、Menu、Select 重点验收焦点管理与键盘行为。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "ui-system"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 6 章组件质量门槛表与复杂组件验收要求。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷文档「5. 增加组件质量门槛」。"
+        }
+      ],
+      "verification": "组件文档与 CI 记录逐项核对：类型定义、状态清单、键盘/无障碍检查、Vitest / Playwright 与视觉回归结果。"
+    },
+    {
+      "id": "mdui-reference-scope",
+      "name": "mdui 仅作设计参考：借鉴 API、状态、键盘与无障碍，不绑定运行时",
+      "note": "参考 mdui 的成熟设计是为了不重复摸索组件 API、状态管理、键盘交互和无障碍规范；自研组件库是为了避免 UI 框架限制产品的视觉和交互。两者不矛盾：参考的是方法与规范，不是默认主题、内部实现或运行时包。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "ui-system",
+        "web-app",
+        "admin-app"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 1.2 节四条原则与第 3.1 节参考与自研边界。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "note": "第 3 章 mdui 与设计体系的参考边界：不安装、不引入、不依赖 mdui 运行时组件。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷文档最终判断：适合长期维护，不会被某个 UI 组件库绑住；不增加新技术栈。"
+        }
+      ],
+      "verification": "依赖审计确认无 mdui / @material/web 运行时包；组件设计决策记录参考来源但不含复制实现。"
+    },
+    {
+      "id": "terminology-alignment",
+      "name": "术语对齐：Go 无 PDO，采用 Handler → Service → Repository 分层",
+      "note": "PDO 是 PHP 概念，Go 中不存在；跨引擎差异由 Repository 接口 + Dialect / Adapter 隔离。分层架构统一表述为 Handler → Service → Repository（Layered / Clean Architecture），不使用传统 MVC 表述，避免团队成员按传统 MVC 理解。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "api-gateway",
+        "repository",
+        "database"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 2.3-2.4 节、第 5.1 节术语对齐条款与附录 A 中的 PDO / MVC 处理。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 8 章术语对齐表。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷二、7/8：确认 Go 无 PDO，MVC 与分层架构需对齐术语。"
+        }
+      ],
+      "verification": "代码与文档中无「Go 的 PDO」「传统 MVC」表述；方言差异有兼容性测试覆盖。"
+    },
+    {
+      "id": "search-throttling",
+      "name": "搜索限流与查询约束必须可配置，不硬编码固定阈值",
+      "note": "登录是否必需、限流维度（账号/IP/设备/风险信号）、查询长度、异常字符与高成本查询限制都必须是可配置策略；采用滑动窗口或令牌桶等可解释算法，不采用「每分钟连续搜索 3 次就禁止 5 秒」这类固定规则。具体阈值待真实使用数据确定。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "search-recommend",
+        "api-gateway"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 9.3 节搜索防滥用：明确要求可配置策略，反对固定阈值僵化；第 9.2 节查询长度与复杂度限制。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷一、5：限流参数与查询约束应写进约束，避免实现时各自发挥。"
+        }
+      ],
+      "verification": "检查限流维度与算法实现、查询长度/异常字符/高成本查询限制均为配置项；阈值变更无需改代码。"
+    },
+    {
+      "id": "detail-anchors",
+      "name": "细节锚点：Noindex、链接预加载、未使用样式、头像动效、Debug 开关",
+      "note": "这些需求散落在规范中但不应在架构层扩建新模块：按页面类型制定 Noindex 与索引策略、链接预加载、清除未使用 CSS、头像在线状态低频呼吸动效（尊重 prefers-reduced-motion）、Debug 仅受控环境启用且生产关闭。实现阶段逐项登记验收记录。",
+      "origin": "local",
+      "strength": "required",
+      "applicability": "applicable",
+      "scope": "modules",
+      "modules": [
+        "ui-system",
+        "delivery",
+        "observability"
+      ],
+      "relationships": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 13.2 节索引策略、第 14.1 节前端性能、第 15.4 节 Debug 与运维操作。"
+        },
+        {
+          "path": "设计文档/VOIDXO_前端_UI_设计规范_V1.0.md",
+          "note": "第 7.9 节头像与在线状态、第 14.1 节前端性能。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷三「未覆盖的细节」：建议在 evidence 里留锚点。"
+        }
+      ],
+      "verification": "实现阶段建立细节验收清单并逐项记录；不把这些细节误当作首期必须新增的架构模块。"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g-frontend",
+      "role": "interaction",
+      "name": "前端与交付",
+      "members": [
+        "web-app",
+        "admin-app",
+        "ui-system",
+        "delivery"
+      ],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 97,
+          "endLine": 128,
+          "note": "逻辑架构把用户端、CDN/WAF、SvelteKit 前端与 SSR/预渲染页面归为同一交付链路。"
+        },
+        {
+          "path": "之前的项目/mdclub-admin-1.0.0/src/admin.php",
+          "line": 18,
+          "endLine": 20,
+          "note": "旧后台由 PHP 模板注入 G_API/G_ROOT 后加载单页应用，属于用户交互与审阅层。"
+        }
+      ]
+    },
+    {
+      "id": "g-api",
+      "role": "runtime",
+      "name": "Go API 与业务分区",
+      "members": [
+        "api-gateway",
+        "user-auth",
+        "content-domain",
+        "interaction-domain",
+        "search-recommend",
+        "file-media"
+      ],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 130,
+          "endLine": 154,
+          "note": "核心模块边界表与部署形态：一个 Go API 服务承载用户、权限、内容、搜索、推荐、文件等模块。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 47,
+          "endLine": 73,
+          "note": "旧系统 /api 分组下按业务分区注册控制器并统一挂载中间件，是功能分区保持不变的依据。"
+        }
+      ]
+    },
+    {
+      "id": "g-platform",
+      "role": "runtime",
+      "name": "数据与基础设施",
+      "members": [
+        "repository",
+        "database",
+        "cache",
+        "object-storage",
+        "outbox-worker",
+        "observability"
+      ],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 115,
+          "endLine": 128,
+          "note": "逻辑架构底部：Repository/Service 下接数据库、Redis、对象存储、后台任务与 Outbox 事件消费。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 742,
+          "endLine": 789,
+          "note": "日志、指标、链路追踪、健康检查与运维能力属于基础运行支撑。"
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "web-app",
+      "role": "frontend",
+      "name": "VOIDXO 站点（SvelteKit）",
+      "kind": "local",
+      "responsibility": "目标：SvelteKit SSR/预渲染站点，保留首页、话题、提问、文章、用户、通知、私信分区。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/templates/default"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Controller/Home"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/Home.php"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/Home.php",
+          "line": 26,
+          "endLine": 90,
+          "note": "旧站页面路由：/、/topics、/articles、/questions、/questions/{id}/answers/{id}、/users、/notifications、/inbox、/sitemap.xml。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 160,
+          "endLine": 167,
+          "note": "SvelteKit 前端：公开页面优先 SSR 或预渲染，用户中心与实时交互动态加载。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 160,
+          "endLine": 193,
+          "note": "目标目录 src/routes、src/lib/components、src/lib/tokens。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 4.1 节：客户端数据缓存与后台刷新（load + SWR 语义）、缓存键/失效/重试/去重规则。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 4.1 节新增条款：SSR 状态按请求隔离、私有页面禁止进入公共 CDN 缓存。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 0,
+        "column": 0
+      }
+    },
+    {
+      "id": "admin-app",
+      "role": "frontend",
+      "name": "管理后台",
+      "kind": "local",
+      "responsibility": "目标：SvelteKit 后台，保留仪表盘、用户、话题、提问、回答、文章、评论、举报、设置分区。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-admin-1.0.0/src/pages"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-admin-1.0.0/src/components"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-admin-1.0.0/src/initializer/view.jsx"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-admin-1.0.0/src/initializer/view.jsx",
+          "line": 62,
+          "endLine": 98,
+          "note": "后台路由：/answers、/articles、/comments、首页、/options、/options/:option、/questions、/reports、/topics、/users。"
+        },
+        {
+          "path": "之前的项目/mdclub-admin-1.0.0/src/admin.php",
+          "line": 18,
+          "endLine": 20,
+          "note": "PHP 模板注入 G_API=/api，后台为纯客户端 SPA，通过 SDK 调后端 REST API。"
+        },
+        {
+          "path": "之前的项目/mdclub-admin-1.0.0/package.json",
+          "line": 43,
+          "endLine": 53,
+          "note": "旧后台运行时依赖 Hyperapp、mdui 1、mdclub-sdk-js、frappe-charts；重构后由 SvelteKit 与自研组件替代。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 2,
+        "column": 0
+      }
+    },
+    {
+      "id": "ui-system",
+      "role": "frontend",
+      "name": "自研组件库与 Design Token",
+      "kind": "local",
+      "responsibility": "目标：自研 Svelte 组件与三层 --vx- Token，视觉对齐现有界面基线。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/public/static/theme"
+        },
+        {
+          "kind": "file",
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0"
+        },
+        {
+          "kind": "file",
+          "path": "设计文档/VOIDXO_前端_UI_设计规范_V1.0.md"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 145,
+          "endLine": 158,
+          "note": "技术边界：SvelteKit 路由与 SSR、Svelte 组件、TypeScript、原生 CSS + CSS Custom Properties、Vitest + Playwright。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 203,
+          "endLine": 217,
+          "note": "依赖方向 Routes/Pages → Business Components → UI Components → Svelte/浏览器原生能力 → Design Tokens。"
+        },
+        {
+          "path": "设计文档/VOIDXO_前端_UI_设计规范_V1.0.md",
+          "line": 119,
+          "endLine": 157,
+          "note": "Token 三层划分与 MD3 语义颜色角色，作为交互与可访问性参考。"
+        },
+        {
+          "path": "设计文档/llms-full.txt",
+          "line": 1,
+          "endLine": 40,
+          "note": "mdui 2 文档仅作组件 API 与交互参考，不作运行时依赖。"
+        },
+        {
+          "path": "设计文档/VOIDXO 前端工程架构与组件库开发规范 V2.1.md",
+          "note": "第 3 章实现策略表、第 5.2 节 CSS Cascade Layers、第 6 章组件质量门槛、第 7.1 节规模控制。"
+        },
+        {
+          "path": "设计文档/VOIDXO_前端_UI_设计规范_V1.0.md",
+          "note": "第 7.9 节头像在线状态动效与第 14.1 节清除未使用样式、链接预加载等细节锚点。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [
+        "品牌主色是否沿用 #0652D9、默认主题与图标库仍待确认，需在视觉基线冻结时决定。"
+      ],
+      "layout": {
+        "row": 1,
+        "column": 1
+      }
+    },
+    {
+      "id": "delivery",
+      "role": "frontend",
+      "name": "静态化 · CDN · SEO 交付",
+      "kind": "local",
+      "responsibility": "目标：页面生成、再验证、CDN Purge、SSR 回退与 SEO 输出。",
+      "ownership": [
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/src/Controller/Home/Sitemap.php"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/public/robots.txt"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/public/sitemap"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 406,
+          "endLine": 461,
+          "note": "预渲染为主、动态更新为辅；Static Rendering 子模块与再生成规则、并发版本控制。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 675,
+          "endLine": 711,
+          "note": "SEO：完整语义 HTML、Title/Description、Canonical、Sitemap、Robots、OG、JSON-LD。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/Home.php",
+          "line": 86,
+          "endLine": 90,
+          "note": "旧站 /sitemap.xml 路由，属于要保留的内容交付能力。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 13.2 节索引策略：按页面类型确定 Noindex，不得对搜索相关页面一刀切。"
+        }
+      ],
+      "status": "uncertain",
+      "openQuestions": [
+        "页面再生成的具体实现机制与 CDN/WAF 供应商仍属待决策项，需在进入静态化阶段前确定。"
+      ],
+      "layout": {
+        "row": 0,
+        "column": 1
+      }
+    },
+    {
+      "id": "api-gateway",
+      "role": "backend",
+      "name": "Go API 入口与横切层",
+      "kind": "local",
+      "responsibility": "目标：/api/v1 入口、统一响应、鉴权限流与分层路由。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Route"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Middleware"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/public/index.php"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/public/static/openapi.yaml"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 47,
+          "endLine": 74,
+          "note": "旧系统 group('/api') 挂载 EnableCrossRequest、JsonBodyParser、NeedInstalled，并按分区注册路由。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 267,
+          "endLine": 276,
+          "note": "API 统一版本前缀、统一成功/错误格式、参数校验、分页上限、认证权限限流。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 214,
+          "endLine": 225,
+          "note": "Handler 负责协议适配、Service 业务编排、Repository 数据访问，模块间明确接口。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 12.4 节：默认读取连接层远端地址，只信任明确配置的可信代理提交的 Forwarded / X-Forwarded-For。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/public/static/openapi.yaml",
+          "note": "全局 API 契约文件，归属 API 入口而非搜索分区；第一版误挂在 search-recommend 下。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 0,
+        "column": 2
+      }
+    },
+    {
+      "id": "user-auth",
+      "role": "security",
+      "name": "用户 · 认证 · 权限 · 设置",
+      "kind": "local",
+      "responsibility": "目标：注册登录、资料、会话、RBAC、验证码、邮件与站点设置。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Controller/RestApi"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Service"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Model"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 57,
+          "endLine": 69,
+          "note": "token、option、user、captcha、email 等分区；另有 NeedLogin、NeedManager 中间件。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/mdclub.sql",
+          "line": 132,
+          "endLine": 132,
+          "note": "mc_option 站点配置表；同文件 258 行 mc_token、295 行 mc_user。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 620,
+          "endLine": 638,
+          "note": "身份认证与 RBAC：会话轮换、Cookie 安全属性、服务端默认拒绝、权限变更审计。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 12.1-12.3 节：登录成功后轮换会话标识、Cookie 的 HttpOnly/Secure/SameSite、Cookie 认证的状态变更请求实施 CSRF 防护。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [
+        "会话存储采用签名 Cookie、数据库还是 Redis？必须与 Redis 首期是否引入同步决策。"
+      ],
+      "layout": {
+        "row": 1,
+        "column": 2
+      }
+    },
+    {
+      "id": "content-domain",
+      "role": "backend",
+      "name": "内容分区（提问 · 回答 · 文章 · 评论 · 话题）",
+      "kind": "local",
+      "responsibility": "目标：提问、回答、文章、评论、话题的发布编辑审核与事务写入。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Service"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Model"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/templates/default/question"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 60,
+          "endLine": 64,
+          "note": "topic、question、answer、article、comment 五个内容分区依次注册。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/mdclub.sql",
+          "line": 2,
+          "endLine": 285,
+          "note": "mc_answer、mc_article、mc_comment、mc_question、mc_topic、mc_topicable 等内容表及其关系。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 130,
+          "endLine": 142,
+          "note": "内容模块负责发布、编辑、删除、审核，不得直接操作 CDN 缓存。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 2,
+        "column": 2
+      }
+    },
+    {
+      "id": "interaction-domain",
+      "role": "backend",
+      "name": "互动分区（投票 · 关注 · 举报 · 通知 · 私信 · 统计）",
+      "kind": "local",
+      "responsibility": "目标：投票、关注、举报、通知、私信与统计。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Model"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/templates/default/inbox"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/templates/default/notification"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 56,
+          "endLine": 67,
+          "note": "stats、report、inbox、notification 分区注册。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/mdclub.sql",
+          "line": 74,
+          "endLine": 333,
+          "note": "mc_follow、mc_inbox、mc_notification、mc_report、mc_vote 等互动数据表。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/Home.php",
+          "line": 76,
+          "endLine": 84,
+          "note": "/notifications 与 /inbox 为旧站独立页面分区。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 3,
+        "column": 2
+      }
+    },
+    {
+      "id": "search-recommend",
+      "role": "backend",
+      "name": "搜索 · 标签 · 推荐",
+      "kind": "local",
+      "responsibility": "目标：统一搜索接口与索引更新；AI 标签与推荐暂缓。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-admin-1.0.0/src/components/search-bar"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 463,
+          "endLine": 509,
+          "note": "搜索架构边界、查询解析、分页、防滥用、索引更新；搜索引擎选型为待决策。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 513,
+          "endLine": 571,
+          "note": "AI 标签流水线与第一阶段推荐算法，明确标注暂时搁浅。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/composer.json",
+          "line": 2,
+          "endLine": 4,
+          "note": "旧系统 composer 包名 zdhxiong/mdclub，依赖中包含 algolia 客户端，说明旧有外部搜索集成。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 9.3 节：限流采用可配置策略，覆盖查询长度、异常字符与高成本查询，不采用固定阈值。"
+        }
+      ],
+      "status": "uncertain",
+      "openQuestions": [
+        "采用数据库全文检索还是独立搜索引擎尚未决策，取决于中文检索质量与运维成本。",
+        "AI 标签与用户兴趣推荐暂时搁浅，第一阶段是否只保留基础关键词检索需要确认。",
+        "SQLite FTS5、MySQL FULLTEXT、PostgreSQL tsvector 的语义与能力差异如何抽象到统一搜索接口？",
+        "限流维度、算法与具体阈值需由真实使用数据确定，实现时不得硬编码固定规则。"
+      ],
+      "layout": {
+        "row": 1,
+        "column": 3
+      }
+    },
+    {
+      "id": "file-media",
+      "role": "backend",
+      "name": "文件 · 图片 · 上传",
+      "kind": "local",
+      "responsibility": "目标：上传校验、哈希去重、图片处理与访问控制。",
+      "ownership": [
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/src/Controller/RestApi/Image.php"
+        },
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/public/upload"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/src/Model/Image.php"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 70,
+          "endLine": 70,
+          "note": "image 分区注册。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/mdclub.sql",
+          "line": 84,
+          "endLine": 84,
+          "note": "mc_image 图片元数据表。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 575,
+          "endLine": 617,
+          "note": "File Service 子职责、上传安全、哈希去重、图片处理与 CDN 交付。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 12.5 节与第 11.2 节：用户输入不得直接拼接文件系统路径，上传不得落入可执行目录，需校验文件签名并做访问控制。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 2,
+        "column": 3
+      }
+    },
+    {
+      "id": "repository",
+      "role": "backend",
+      "name": "Repository · 事务 · 迁移",
+      "kind": "local",
+      "responsibility": "目标：Repository 接口、事务边界、迁移与连接池。",
+      "ownership": [
+        {
+          "kind": "directory",
+          "path": "之前的项目/mdclub-v1.0.2/src/Model"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/mdclub.sql"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/config/config.default.php"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/config/config.default.php",
+          "line": 7,
+          "endLine": 15,
+          "note": "旧系统 DB_CONNECTION=mysql、库名 mdclub、表前缀 mc_，是数据模型迁移起点。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/mdclub.sql",
+          "line": 2,
+          "endLine": 333,
+          "note": "17 张 mc_ 前缀业务表，构成需迁移的关系模型。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 289,
+          "endLine": 317,
+          "note": "Handler→Service→Repository Interface→Implementation→Driver/Dialect 分层与数据库规范。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 82,
+          "endLine": 90,
+          "note": "统一 Repository 接口、Dialect 隔离、首期只选一种主数据库。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 6.2 节与第 14.1 节：禁止 N+1、列表稳定排序、连接池配置；第 2.4 节方言隔离与兼容性测试。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 0,
+        "column": 4
+      }
+    },
+    {
+      "id": "database",
+      "role": "database",
+      "name": "主数据库（待决策）",
+      "kind": "external",
+      "responsibility": "目标：唯一权威数据源，首期主数据库待决策。",
+      "ownership": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 51,
+          "endLine": 57,
+          "note": "数据库方向 SQLite/MySQL/PostgreSQL，首期选定一个主数据库。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 970,
+          "endLine": 975,
+          "note": "首期主数据库、SQLite 是否用于生产均为待决策。"
+        }
+      ],
+      "status": "uncertain",
+      "openQuestions": [
+        "首期主数据库选 SQLite、MySQL 还是 PostgreSQL？SQLite 是否允许用于生产？"
+      ],
+      "layout": {
+        "row": 0,
+        "column": 5
+      }
+    },
+    {
+      "id": "cache",
+      "role": "cache",
+      "name": "Redis 缓存与限流（待决策）",
+      "kind": "external",
+      "responsibility": "目标：热点缓存与限流，可从数据库重建。",
+      "ownership": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 349,
+          "endLine": 370,
+          "note": "缓存层级与规范：CDN、Redis、数据库；私有数据不进公共缓存、防止穿透击穿雪崩。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/mdclub.sql",
+          "line": 44,
+          "endLine": 44,
+          "note": "旧系统 mc_cache 表承担缓存，重构后由 Redis 或等效能力替代。"
+        }
+      ],
+      "status": "uncertain",
+      "openQuestions": [
+        "Redis 是否首期引入？若首期不引入，限流与轻量队列的替代实现是什么？",
+        "若 Redis 首期不引入，会话存储方案（签名 Cookie / 数据库 / Redis）必须同步决策。"
+      ],
+      "layout": {
+        "row": 1,
+        "column": 5
+      }
+    },
+    {
+      "id": "object-storage",
+      "role": "generic",
+      "name": "对象存储与 CDN（待决策）",
+      "kind": "external",
+      "responsibility": "目标：对象存储负责原图与衍生图的持久化，CDN 负责公开媒体与页面分发，两者职责独立、可分别选型；私有文件须授权访问。",
+      "ownership": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 55,
+          "endLine": 57,
+          "note": "文件存储建议对象存储，CDN 交付静态资源与公开页面。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 976,
+          "endLine": 977,
+          "note": "对象存储供应商、CDN/WAF 供应商待决策。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/composer.json",
+          "line": 2,
+          "endLine": 2,
+          "note": "旧包 zdhxiong/mdclub 的 suggest 段列出 FTP/SFTP 上传扩展，属于要被替换的旧存储通道。"
+        }
+      ],
+      "status": "uncertain",
+      "openQuestions": [
+        "对象存储与 CDN/WAF 供应商、私有文件授权与回源策略尚未确定。",
+        "对象存储与 CDN 是否分别选型？若分别选型，需明确回源、私有文件授权与失效链路。"
+      ],
+      "roleAssessment": {
+        "basis": "out-of-taxonomy",
+        "note": "该模块是系统外部的文件存储与边缘分发服务，职责既不是前端、后端业务，也不是数据库/缓存/队列/安全中的单一类型，故归为 generic；分类依据见设计文档技术选型表与文件服务章节。"
+      },
+      "layout": {
+        "row": 1,
+        "column": 4
+      }
+    },
+    {
+      "id": "outbox-worker",
+      "role": "queue",
+      "name": "Outbox 事件与后台 Worker",
+      "kind": "local",
+      "responsibility": "目标：Outbox 事件幂等消费，驱动缓存、页面与索引更新。",
+      "ownership": [
+        {
+          "kind": "file",
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 372,
+          "endLine": 398,
+          "note": "Outbox 流程：业务写入 + 事件同事务提交 → Worker 拉取 → 缓存失效/页面再生成/索引更新 → 记录状态与重试。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 144,
+          "endLine": 154,
+          "note": "部署形态包含一个后台任务进程，可与 API 同仓库构建。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 2,
+        "column": 4
+      }
+    },
+    {
+      "id": "observability",
+      "role": "backend",
+      "name": "日志 · 指标 · 追踪 · 健康检查",
+      "kind": "local",
+      "responsibility": "目标：结构化日志、指标追踪、健康检查与审计。",
+      "ownership": [
+        {
+          "kind": "file",
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md"
+        },
+        {
+          "kind": "file",
+          "path": "之前的项目/mdclub-v1.0.2/config/config.default.php"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 742,
+          "endLine": 789,
+          "note": "日志、指标、健康检查、Debug 与运维操作、备份与恢复规范。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 774,
+          "endLine": 780,
+          "note": "Go 项目不设置 PHP OPcache 清理按钮，改为 Go 服务运行状态、配置更新与优雅重启能力。"
+        },
+        {
+          "path": "之前的项目/mdclub-v1.0.2/config/config.default.php",
+          "line": 3,
+          "endLine": 5,
+          "note": "旧配置含 APP_DEBUG、APP_RUNTIME、APP_SHOW_API_DOCS，重构后由受控配置与可观测性能力承接。"
+        },
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "note": "第 12.5 节屏蔽隐藏文件/配置/密钥与内部目录外部访问；第 12.6 节审计日志；第 15.4 节 Debug 仅受控环境启用、生产默认关闭。"
+        }
+      ],
+      "status": "supported",
+      "openQuestions": [],
+      "layout": {
+        "row": 3,
+        "column": 4
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r-01",
+      "from": "web-app",
+      "to": "delivery",
+      "label": "构建产物交付：预渲染 HTML 与 Sitemap",
+      "kind": "event",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 410,
+          "endLine": 415,
+          "note": "公开稳定页面预渲染或静态生成，由页面生成模块产出版本。 箭头表示 SvelteKit 构建产物交由静态化模块发布与再生成，不代表运行时同步调用（缺陷三、r-01 方向语义）。"
+        }
+      ]
+    },
+    {
+      "id": "r-02",
+      "from": "web-app",
+      "to": "api-gateway",
+      "label": "页面数据与交互请求 /api/v1",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 104,
+          "endLine": 109,
+          "note": "逻辑架构中 SvelteKit 前端向下请求 Go API。"
+        }
+      ]
+    },
+    {
+      "id": "r-03",
+      "from": "admin-app",
+      "to": "api-gateway",
+      "label": "管理端 REST 请求",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-admin-1.0.0/src/admin.php",
+          "line": 18,
+          "endLine": 18,
+          "note": "G_API 指向 /api；后台所有页面通过 SDK 调用该 API。"
+        }
+      ]
+    },
+    {
+      "id": "r-04",
+      "from": "web-app",
+      "to": "ui-system",
+      "label": "引用自研组件与 --vx- Token",
+      "kind": "dependency",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 203,
+          "endLine": 217,
+          "note": "Routes/Pages 依赖业务组件与基础组件，组件引用 Token。"
+        }
+      ]
+    },
+    {
+      "id": "r-05",
+      "from": "admin-app",
+      "to": "ui-system",
+      "label": "复用组件与 Token（表格 · 表单 · 图表容器）",
+      "kind": "dependency",
+      "visibility": "detail",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO 前端组件库与设计 Token 实施规范 V2.0",
+          "line": 195,
+          "endLine": 201,
+          "note": "基础、布局、业务组件分层，页面层不重复实现基础控件。"
+        }
+      ]
+    },
+    {
+      "id": "r-06",
+      "from": "api-gateway",
+      "to": "user-auth",
+      "label": "认证 · 鉴权 · 用户与设置请求",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 57,
+          "endLine": 59,
+          "note": "token、option、user 分区；中间件含 NeedLogin/NeedManager。"
+        }
+      ]
+    },
+    {
+      "id": "r-07",
+      "from": "api-gateway",
+      "to": "content-domain",
+      "label": "内容读写请求",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 60,
+          "endLine": 64,
+          "note": "topic、question、answer、article、comment 分区注册。"
+        }
+      ]
+    },
+    {
+      "id": "r-08",
+      "from": "api-gateway",
+      "to": "interaction-domain",
+      "label": "互动 · 通知 · 统计请求",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 56,
+          "endLine": 67,
+          "note": "stats、report、inbox、notification 分区注册。"
+        }
+      ]
+    },
+    {
+      "id": "r-09",
+      "from": "api-gateway",
+      "to": "search-recommend",
+      "label": "搜索与推荐请求",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 465,
+          "endLine": 472,
+          "note": "搜索模块提供统一接口，业务层不直接接触全文检索语法。"
+        }
+      ]
+    },
+    {
+      "id": "r-10",
+      "from": "api-gateway",
+      "to": "file-media",
+      "label": "上传与图片请求",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "之前的项目/mdclub-v1.0.2/src/Route/RestApi.php",
+          "line": 70,
+          "endLine": 70,
+          "note": "image 分区注册。"
+        }
+      ]
+    },
+    {
+      "id": "r-11",
+      "from": "content-domain",
+      "to": "repository",
+      "label": "事务内读写内容数据",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 321,
+          "endLine": 328,
+          "note": "发帖、编辑帖子、删除帖子、回复等必须在事务中完成。"
+        }
+      ]
+    },
+    {
+      "id": "r-12",
+      "from": "interaction-domain",
+      "to": "repository",
+      "label": "事务内读写互动数据",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 329,
+          "endLine": 337,
+          "note": "删除用户、修改权限角色关系、文件元数据关联变更需要事务。"
+        }
+      ]
+    },
+    {
+      "id": "r-13",
+      "from": "user-auth",
+      "to": "repository",
+      "label": "用户 · 令牌 · 配置数据",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 220,
+          "endLine": 223,
+          "note": "Service 编排业务、Repository 负责数据访问，禁止跨模块访问内部数据库实现。"
+        }
+      ]
+    },
+    {
+      "id": "r-14",
+      "from": "repository",
+      "to": "database",
+      "label": "参数化查询 · 迁移 · 连接池",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 289,
+          "endLine": 317,
+          "note": "Repository Implementation → Database Driver/Dialect → SQLite/MySQL/PostgreSQL。 关系标 supported 表示设计上确定要这样交互，不代表实现已就绪；目标数据库/缓存模块仍为 uncertain。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷二、11：待决策模块与 supported 关系存在语义张力，需区分「设计确定」与「实现已就绪」。"
+        }
+      ]
+    },
+    {
+      "id": "r-15",
+      "from": "repository",
+      "to": "cache",
+      "label": "热点缓存 · 限流计数",
+      "kind": "dependency",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 353,
+          "endLine": 370,
+          "note": "Redis 承载热点业务数据、会话辅助数据与限流计数，缓存可重建。 关系标 supported 表示设计上确定要这样交互，不代表实现已就绪；目标数据库/缓存模块仍为 uncertain。"
+        },
+        {
+          "path": "设计文档/关于架构图第一版缺陷.md",
+          "note": "缺陷二、11：待决策模块与 supported 关系存在语义张力，需区分「设计确定」与「实现已就绪」。"
+        }
+      ]
+    },
+    {
+      "id": "r-16",
+      "from": "repository",
+      "to": "outbox-worker",
+      "label": "业务数据与 Outbox 事件同事务提交",
+      "kind": "event",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 379,
+          "endLine": 398,
+          "note": "更新业务表 + 写入 Outbox 事件 → 提交事务 → Worker 拉取待处理事件。"
+        }
+      ]
+    },
+    {
+      "id": "r-17",
+      "from": "file-media",
+      "to": "object-storage",
+      "label": "存储原图与衍生图",
+      "kind": "request",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 586,
+          "endLine": 617,
+          "note": "Object Storage Adapter、缩略图、静态媒体通过 CDN 交付。"
+        }
+      ]
+    },
+    {
+      "id": "r-18",
+      "from": "outbox-worker",
+      "to": "delivery",
+      "label": "触发页面再生成与 CDN 失效",
+      "kind": "event",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 385,
+          "endLine": 388,
+          "note": "Worker 执行缓存失效 / 页面再生成 / 搜索索引更新。"
+        }
+      ]
+    },
+    {
+      "id": "r-19",
+      "from": "outbox-worker",
+      "to": "search-recommend",
+      "label": "搜索索引更新与全量重建",
+      "kind": "event",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 500,
+          "endLine": 505,
+          "note": "内容变更通过事件触发索引更新，可重试、可幂等、支持全量重建。"
+        }
+      ]
+    },
+    {
+      "id": "r-20",
+      "from": "outbox-worker",
+      "to": "cache",
+      "label": "缓存失效与刷新",
+      "kind": "control",
+      "visibility": "overview",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 400,
+          "endLine": 402,
+          "note": "业务数据提交成功后才执行缓存失效、页面再生成与索引更新。"
+        }
+      ]
+    },
+    {
+      "id": "r-21",
+      "from": "search-recommend",
+      "to": "repository",
+      "label": "检索与索引数据访问",
+      "kind": "request",
+      "visibility": "detail",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 467,
+          "endLine": 472,
+          "note": "必须区分数据库业务查询与面向用户的全文检索，搜索结果遵守权限规则。"
+        }
+      ]
+    },
+    {
+      "id": "r-22",
+      "from": "file-media",
+      "to": "outbox-worker",
+      "label": "图片处理与缩略图后台任务",
+      "kind": "event",
+      "visibility": "detail",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 610,
+          "endLine": 616,
+          "note": "图片处理任务放入后台队列，删除引用后延迟垃圾回收。"
+        }
+      ]
+    },
+    {
+      "id": "r-23",
+      "from": "api-gateway",
+      "to": "observability",
+      "label": "请求日志 · 指标 · 链路追踪",
+      "kind": "event",
+      "visibility": "detail",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 746,
+          "endLine": 762,
+          "note": "结构化日志含请求 ID；HTTP 请求数、延迟、错误率与后台任务指标统一采集。"
+        }
+      ]
+    },
+    {
+      "id": "r-24",
+      "from": "outbox-worker",
+      "to": "observability",
+      "label": "任务耗时 · 重试 · 失败告警",
+      "kind": "event",
+      "visibility": "detail",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 759,
+          "endLine": 762,
+          "note": "采集后台任务队列长度、重试次数、失败数与页面生成耗时。"
+        }
+      ]
+    },
+    {
+      "id": "r-25",
+      "from": "content-domain",
+      "to": "file-media",
+      "label": "内容引用图片与附件",
+      "kind": "dependency",
+      "visibility": "detail",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 328,
+          "endLine": 328,
+          "note": "文件元数据与业务记录的关联变更属于需要事务保护的操作。"
+        }
+      ]
+    },
+    {
+      "id": "r-26",
+      "from": "user-auth",
+      "to": "api-gateway",
+      "label": "返回会话与授权判定",
+      "kind": "result",
+      "visibility": "detail",
+      "status": "supported",
+      "openQuestions": [],
+      "evidence": [
+        {
+          "path": "设计文档/VOIDXO_开发技术规范_V2.0.md",
+          "line": 632,
+          "endLine": 638,
+          "note": "权限必须在服务端执行，默认拒绝未明确授权的操作。"
+        }
+      ]
+    }
+  ]
+}

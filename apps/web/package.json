@@ -1,0 +1,31 @@
+{
+  "name": "@voidxo/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#lib": "./src/lib/index.ts",
+    "#lib/*": "./src/lib/*"
+  },
+  "scripts": {
+    "dev": "vite dev --host 127.0.0.1",
+    "prebuild": "node ./scripts/prepare-build.mjs",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^6.0.1",
+    "@sveltejs/kit": "^3.1.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.43.0",
+    "svelte-check": "^4.3.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.0",
+    "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "voidxo": "file:../.."
+  }
+}

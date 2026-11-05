@@ -1,0 +1,53 @@
+@layer tokens {
+  :root {
+    --vx-color-bg: var(--vx-source-surface);
+    --vx-color-surface: var(--vx-source-surface);
+    --vx-color-text-primary: var(--vx-source-text);
+    --vx-color-text-secondary: var(--vx-source-text-secondary);
+    --vx-color-border: var(--vx-source-border);
+    --vx-color-error: var(--vx-source-error);
+    --vx-color-focus: currentColor;
+    --vx-space-1: var(--vx-source-space-1);
+    --vx-space-2: var(--vx-source-space-2);
+    --vx-space-3: var(--vx-source-space-3);
+    --vx-space-4: var(--vx-source-space-4);
+    --vx-space-6: var(--vx-source-space-6);
+    --vx-space-8: var(--vx-source-space-8);
+    --vx-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --vx-font-size-body: var(--vx-source-font-size);
+    --vx-radius-control: var(--vx-source-radius-control);
+    --vx-content-width: var(--vx-source-content-width);
+    --vx-motion-standard: var(--vx-source-motion-standard);
+    --vx-motion-easing: var(--vx-source-motion-emphasized);
+    --vx-color-primary: var(--vx-source-primary);
+    --vx-color-primary-soft: var(--vx-source-primary-soft);
+    /* 侧栏选中项底色：中性灰，文字继承正文色。 */
+    --vx-color-nav-active-bg: var(--vx-source-nav-active-bg);
+    --vx-color-surface-subtle: var(--vx-source-surface-subtle);
+    --vx-color-surface-hover: var(--vx-source-surface-hover);
+    --vx-color-surface-active: var(--vx-source-surface-active);
+    --vx-color-text-tertiary: var(--vx-source-text-tertiary);
+    --vx-color-divider: var(--vx-source-divider);
+    --vx-space-5: var(--vx-source-space-5);
+    --vx-space-10: var(--vx-source-space-10);
+    --vx-space-12: var(--vx-source-space-12);
+    --vx-font-size-caption: var(--vx-source-font-size-caption);
+    --vx-font-size-small: var(--vx-source-font-size-small);
+    --vx-font-size-subtitle: var(--vx-source-font-size-subtitle);
+    --vx-font-size-title: var(--vx-source-font-size-title);
+    --vx-font-size-headline: var(--vx-source-font-size-headline);
+    --vx-line-height-body: var(--vx-source-line-height-body);
+    --vx-radius-xs: var(--vx-source-radius-xs);
+    --vx-radius-card: var(--vx-source-radius-card);
+    --vx-radius-pill: var(--vx-source-radius-pill);
+    --vx-shadow-card: var(--vx-source-shadow-card);
+    --vx-shadow-overlay: var(--vx-source-shadow-overlay);
+    --vx-color-surface-glass: var(--vx-source-surface-glass);
+    --vx-color-surface-glass-control: var(--vx-source-surface-glass-control);
+    --vx-blur-glass: var(--vx-source-blur-glass);
+    --vx-layout-content: var(--vx-source-layout-content);
+    --vx-layout-list: var(--vx-source-layout-list);
+    --vx-layout-appbar: var(--vx-source-layout-appbar);
+    --vx-layout-drawer: var(--vx-source-layout-drawer);
+  }
+}

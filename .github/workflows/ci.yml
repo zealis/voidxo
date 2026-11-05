@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+      - run: test -z "$(gofmt -l cmd internal migrations/migrations.go)"
+      - run: go vet ./...
+      - run: go test -race ./...
+      - run: go build ./...
+  migration:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: voidxo
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+      redis:
+        image: redis:7.4-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      VOIDXO_ENV: test
+      VOIDXO_DATABASE_DSN: 'root:root@tcp(127.0.0.1:3306)/voidxo?charset=utf8mb4&parseTime=true&loc=UTC'
+      VOIDXO_REDIS_ADDR: 127.0.0.1:6379
+      VOIDXO_COOKIE_SECURE: 'false'
+      VOIDXO_SESSION_IDLE_TTL: 1h
+      VOIDXO_SESSION_ABSOLUTE_TTL: 24h
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
+          cache: true
+      - run: go run ./cmd/migrate -direction up
+      - run: go run ./cmd/migrate -direction up
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --audit-level=high

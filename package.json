@@ -1,0 +1,10 @@
+{
+  "name": "voidxo",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix apps/web run dev",
+    "build": "npm --prefix apps/web run build",
+    "check": "npm --prefix apps/web run check"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,32 @@
+.env
+.env.*
+!.env.example
+*.log
+coverage/
+dist/
+build/
+bin/
+node_modules/
+.svelte-kit/
+.DS_Store
+
+# 工作区助手数据与本地工具缓存（含记忆、备份、临时构建产物），不入库
+.workbuddy/
+.worktrees/
+
+# 本地上传的图片
+/uploads/
+
+# 设计文档与旧系统参考源码：本地保留用于开发，不纳入版本库
+/设计文档/
+/之前的项目/
+
+# 含本地明文口令的编排文件（敏感）；迁移脚本 migrations/*.sql 是代码，不在此列
+/compose.yaml
+
+# 数据库导出/转储文件（migrations/*.sql 属于迁移代码，不可忽略）
+*.dump
+*.sql.gz
+*.db
+*.sqlite
+*.sqlite3

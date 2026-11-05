@@ -1,0 +1,13 @@
+@layer tokens {
+  :root {
+    --vx-button-height: 36px;
+    --vx-button-padding: 0 16px;
+    --vx-button-radius: var(--vx-radius-control);
+    --vx-button-primary-bg: var(--vx-color-text-primary);
+    --vx-button-primary-text: var(--vx-color-surface);
+    --vx-button-outlined-text: var(--vx-color-text-primary);
+    --vx-button-outlined-border: var(--vx-source-control-border);
+    --vx-input-height: 36px;
+    --vx-radius-card: var(--vx-radius-control);
+  }
+}
