@@ -110,7 +110,7 @@
 
   <section aria-labelledby="form-title">
     <h2 id="form-title">文本字段与表单提交</h2>
-    <form onsubmit={submit} novalidate>
+    <form class="demo-form" onsubmit={submit} novalidate>
       <VxTextField label="姓名" name="displayName" autocomplete="name" bind:value={displayName} />
       <VxTextField label="邮箱" name="email" type="email" autocomplete="email" bind:value={email} />
       <VxTextField label="备注（多行）" rows={4} maxlength={200} bind:value={note} />
@@ -123,6 +123,15 @@
       姓名：{displayName || '（空）'} · 邮箱：{email || '（空）'} · 备注：{note || '（空）'}
     </p>
     <p class="hint" aria-live="polite">{submitted || '尚未提交'}</p>
+  </section>
+
+  <section aria-labelledby="get-form-title">
+    <h2 id="get-form-title">原生 GET 表单提交</h2>
+    <form class="get-form" method="get">
+      <input type="search" name="probe" value="probe-value" aria-label="GET 表单探针" />
+      <VxButton type="submit" variant="outlined">GET 提交</VxButton>
+    </form>
+    <p class="hint">提交后地址栏应带 ?probe=probe-value</p>
   </section>
 
   <section aria-labelledby="controls-title">

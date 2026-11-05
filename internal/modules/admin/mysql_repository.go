@@ -258,20 +258,21 @@ func (r *MySQLRepository) contentQuery(kind string, filter ContentFilter) (strin
 			args = append(args, like)
 		}
 	}
+	// 各内容类型的主表别名不同（question/article 用 t，answer 用 a，comment 用 c），
+	// 删除状态过滤必须跟随主表别名，否则 answer 会生成 t.deleted_at 而报 Unknown column。
+	deletedColumn := "t.deleted_at"
+	switch kind {
+	case KindAnswer:
+		deletedColumn = "a.deleted_at"
+	case KindComment:
+		deletedColumn = "c.deleted_at"
+	}
 	switch filter.Deleted {
 	case "deleted":
-		if kind == KindComment {
-			where = append(where, "c.deleted_at IS NOT NULL")
-		} else {
-			where = append(where, "t.deleted_at IS NOT NULL")
-		}
+		where = append(where, deletedColumn+" IS NOT NULL")
 	case "all":
 	default:
-		if kind == KindComment {
-			where = append(where, "c.deleted_at IS NULL")
-		} else {
-			where = append(where, "t.deleted_at IS NULL")
-		}
+		where = append(where, deletedColumn+" IS NULL")
 	}
 	clause := ""
 	if len(where) > 0 {

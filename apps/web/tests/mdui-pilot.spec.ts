@@ -55,7 +55,7 @@ test.describe('mdui 2 试点验收', () => {
     );
     expect(values).toEqual(['张三', 'zhangsan@example.com', '']);
 
-    await page.locator('mdui-button[type="submit"]').click();
+    await page.locator('form.demo-form mdui-button[type="submit"]').click();
     await expect(page.locator('[aria-live="polite"]')).toContainText('张三');
     await expect(page.locator('[aria-live="polite"]')).toContainText('zhangsan@example.com');
   });
@@ -71,6 +71,13 @@ test.describe('mdui 2 试点验收', () => {
     await textarea.fill('第一行\n第二行');
     await expect(multiline).toHaveJSProperty('value', '第一行\n第二行');
     await expect(page.getByTestId('field-values')).toContainText('备注：第一行');
+  });
+
+  test('M5：mdui-button 作为 submit 能提交原生 GET 表单', async ({ page }) => {
+    await page.goto(PILOT);
+    await waitForUpgrade(page);
+    await page.locator('form.get-form mdui-button[type="submit"]').click();
+    await expect(page).toHaveURL(/[?&]probe=probe-value/);
   });
 
   test('M3：深浅色切换写入 mdui 主题 class', async ({ page }) => {

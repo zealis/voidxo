@@ -1,44 +1,19 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { AUTH_USER, loginViaApi, requireCredentials } from './support/login.js';
 
 // 登录态真实浏览器回归（可选）。
 //
-// 凭据仅由 VOIDXO_SMOKE_USER / VOIDXO_SMOKE_PASSWORD 环境变量提供，不写入文件、
-// 不打印；未提供时整组跳过，默认 `npm run test:e2e` 不需要任何凭据。
-// 关闭 trace / 截图 / 录像，避免登录请求体或会话值进入测试产物。
-const USER = process.env.VOIDXO_SMOKE_USER ?? '';
-const PASSWORD = process.env.VOIDXO_SMOKE_PASSWORD ?? '';
+// 凭据与登录逻辑在 ./support/login.ts：仅读环境变量、不打印、不回传会话值。
+// 未提供凭据时整组跳过；trace / 截图 / 录像关闭，避免登录请求体进入测试产物。
 
 // 必须放在文件顶层：这三项会强制新 worker，放在 describe 内会被 Playwright 拒绝。
 test.use({ trace: 'off', screenshot: 'off', video: 'off' });
 
 test.describe('登录态真实浏览器回归（可选）', () => {
-  test.skip(!USER || !PASSWORD, '设置 VOIDXO_SMOKE_USER / VOIDXO_SMOKE_PASSWORD 后才会运行');
-
-  // 在页面内同源完成 CSRF + login，Cookie 交给浏览器上下文持有；
-  // 只返回状态码，不回传响应体或任何会话值。
-  async function login(page: Page): Promise<void> {
-    await page.goto('/login');
-    const status = await page.evaluate(
-      async ({ user, password }) => {
-        const csrfRes = await fetch('/api/v1/auth/csrf', { credentials: 'same-origin' });
-        const payload = await csrfRes.json();
-        const token = payload?.data?.csrf_token ?? '';
-        const loginRes = await fetch('/api/v1/auth/login', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { 'content-type': 'application/json', 'X-CSRF-Token': token },
-          body: JSON.stringify({ login: user, password, device_id: 'playwright-auth-session' })
-        });
-        return { csrf: csrfRes.status, login: loginRes.status };
-      },
-      { user: USER, password: PASSWORD }
-    );
-    expect(status.csrf).toBe(200);
-    expect(status.login).toBe(200);
-  }
+  requireCredentials();
 
   test.beforeEach(async ({ page }) => {
-    await login(page);
+    await loginViaApi(page);
   });
 
   test('首页登录态：账户菜单出现，登录/注册 CTA 消失', async ({ page }) => {
@@ -52,7 +27,7 @@ test.describe('登录态真实浏览器回归（可选）', () => {
     await page.goto('/admin/users');
     await expect(page.locator('h1')).toHaveText('用户');
     await expect(page.locator('table tbody tr').first()).toBeVisible();
-    await expect(page.locator('.admin-bar .user')).toHaveText(USER);
+    await expect(page.locator('.admin-bar .user')).toHaveText(AUTH_USER);
     await expect(page.locator('p.error')).toHaveCount(0);
   });
 
