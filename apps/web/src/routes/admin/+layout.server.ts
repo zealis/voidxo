@@ -2,8 +2,9 @@ import { error, redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { fetchCurrentUser, type AuthUser } from '#lib/api/auth.js';
 
-export const load: LayoutServerLoad = async ({ fetch, setHeaders }): Promise<{ user: AuthUser }> => {
-  setHeaders({ 'cache-control': 'private, no-store' });
+export const load: LayoutServerLoad = async ({ fetch }): Promise<{ user: AuthUser }> => {
+  // 私有页面的 cache-control: private, no-store 已由根布局统一设置；
+  // 子布局再次 setHeaders 同名头会触发 SvelteKit 的 header_already_set（500）。
   const user = await fetchCurrentUser(fetch);
   if (!user) {
     redirect(303, '/login');

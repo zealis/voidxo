@@ -1,4 +1,5 @@
 <script lang="ts">
+  import VxChip from '#lib/components/ui/VxChip.svelte';
   import { goto, invalidateAll } from '$app/navigation';
   import VxButton from '#lib/components/ui/VxButton.svelte';
   import Avatar from '#lib/components/Avatar.svelte';
@@ -149,7 +150,7 @@
     {#if data.question.topics.length > 0}
       <ul class="topic-bar" aria-label="所属话题">
         {#each data.question.topics as topic (topic.id)}
-          <li><a class="chip" href={`/topics/${topic.id}`}>{topic.name}</a></li>
+          <li><VxChip href={`/topics/${topic.id}`}>{topic.name}</VxChip></li>
         {/each}
       </ul>
     {/if}
@@ -270,17 +271,6 @@
   .prose :global(img) { max-width: 100%; height: auto; }
 
   .topic-bar { display: flex; flex-wrap: wrap; gap: var(--vx-space-2); padding-bottom: var(--vx-space-4); }
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    height: 32px;
-    padding: 0 var(--vx-space-3);
-    color: var(--vx-color-text-secondary);
-    font-size: var(--vx-font-size-small);
-    background: var(--vx-color-surface-subtle);
-    border-radius: var(--vx-radius-pill);
-  }
-  .chip:hover { color: var(--vx-color-text-primary); }
 
   .question-actions {
     display: flex;

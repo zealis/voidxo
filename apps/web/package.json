@@ -14,7 +14,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "smoke:ssr": "node ./scripts/ssr-smoke.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
