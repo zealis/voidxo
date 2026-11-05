@@ -1,9 +1,17 @@
 <script lang="ts">
   import '#lib/styles/global.css';
+  import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { canonicalUrl, isNoindex } from '#lib/seo.js';
+  import { applyBrandColor, BRAND_COLOR } from '#lib/mdui/theme.js';
   import AppShell from '#lib/components/AppShell.svelte';
   import type { LayoutProps } from './$types';
+
+  // M3：品牌色经 setColorScheme 生成 MD3 色板，函数按需导入且只在客户端执行。
+  // 首屏主题 class 已由 app.html 的内联脚本设置，这里只负责色板。
+  onMount(() => {
+    applyBrandColor(BRAND_COLOR);
+  });
 
   let { data, children }: LayoutProps = $props();
 

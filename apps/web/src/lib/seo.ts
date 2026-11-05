@@ -1,7 +1,7 @@
 // 与 SEO 相关的纯函数集中在此，便于单测与在 hooks、页面之间复用。
 
 // 这些分区属于私有或交互页，不参与索引。
-const NOINDEX_PREFIXES = ['/admin', '/messages', '/notifications', '/user', '/search', '/login', '/register', '/forgot-password', '/internal'];
+const NOINDEX_PREFIXES = ['/admin', '/messages', '/notifications', '/user', '/search', '/login', '/register', '/forgot-password', '/internal', '/mdui-pilot'];
 
 export function isNoindex(pathname: string): boolean {
   if (/\/(new|edit)$/.test(pathname)) {

@@ -1,7 +1,15 @@
-@layer reset, tokens, base, components, utilities, overrides;
+/* M1/M4：mdui.css 是未分层样式，必须在层声明之前引入且全局只引一次。
+   按 CSS 级联规则它优先于本项目 @layer 内的样式，覆盖 mdui 只能走
+   CSS 自定义属性、::part 与 slot，不能靠 overrides 层强压。 */
+@import 'mdui/mdui.css';
 @import '../tokens/source.css';
 @import '../tokens/semantic.css';
 @import '../tokens/components.css';
+
+/* 所有 @import 必须连续放在样式表最开头。若在中间插入 @layer 声明，
+   后面的 @import 会被 CSS 解析器/构建器丢弃，导致 Token 全部失效
+   （试点第一阶段曾因此让现有页面丢失背景、边框与间距）。 */
+@layer reset, tokens, base, components, utilities, overrides;
 
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; }
@@ -22,6 +30,25 @@
     background: var(--vx-color-bg);
   }
   a { color: inherit; text-decoration: none; }
+  /* M2：组件只在客户端注册。未定义时保留与最终控件接近的槽位尺寸，
+     slot 里的原生文本仍可读，升级后样式由 mdui 接管；不整页隐藏。 */
+  mdui-button:not(:defined),
+  mdui-button-icon:not(:defined),
+  mdui-text-field:not(:defined) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 40px;
+    min-width: 64px;
+    padding: 0 12px;
+    color: var(--vx-color-text-primary);
+    font: inherit;
+    border: 1px solid var(--vx-color-border);
+    border-radius: var(--vx-radius-control);
+  }
+  mdui-button-icon:not(:defined) { min-width: 40px; padding: 0; }
+  mdui-text-field:not(:defined) { width: 100%; justify-content: flex-start; }
   ::selection { color: var(--vx-color-text-primary); background: var(--vx-color-primary-soft); }
   :focus-visible { outline: 2px solid var(--vx-color-primary); outline-offset: 2px; }
   /* 固定导航不遮挡锚点与键盘焦点。 */

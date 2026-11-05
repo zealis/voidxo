@@ -4,6 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      // M3：在首屏绘制前确定主题 class，避免 mdui 组件升级时出现深浅色闪烁。
+      // 只读取展示偏好，不读取或写入任何会话标识。
+      (function () {
+        var theme = 'auto';
+        try {
+          var saved = window.localStorage.getItem('voidxo-theme');
+          if (saved === 'light' || saved === 'dark' || saved === 'auto') theme = saved;
+        } catch (error) {
+          // 隐私模式下 localStorage 不可用，退回跟随系统。
+        }
+        document.documentElement.classList.add('mdui-theme-' + theme);
+      })();
+    </script>
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">

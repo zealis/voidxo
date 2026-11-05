@@ -1,12 +1,15 @@
 @layer tokens {
   :root {
-    --vx-color-bg: var(--vx-source-surface);
-    --vx-color-surface: var(--vx-source-surface);
-    --vx-color-text-primary: var(--vx-source-text);
-    --vx-color-text-secondary: var(--vx-source-text-secondary);
-    --vx-color-border: var(--vx-source-border);
-    --vx-color-error: var(--vx-source-error);
-    --vx-color-focus: currentColor;
+    /* M3：颜色语义层只保留别名，取值全部来自 mdui 色板。
+       mdui 变量是 "R,G,B" 三通道，须经 rgb() 组装；
+       .mdui-theme-dark 会重定义这些变量，深浅色因此由 setTheme 驱动，不再自研一套。 */
+    --vx-color-bg: rgb(var(--mdui-color-background));
+    --vx-color-surface: rgb(var(--mdui-color-surface));
+    --vx-color-text-primary: rgb(var(--mdui-color-on-surface));
+    --vx-color-text-secondary: rgb(var(--mdui-color-on-surface-variant));
+    --vx-color-border: rgb(var(--mdui-color-outline-variant));
+    --vx-color-error: rgb(var(--mdui-color-error));
+    --vx-color-focus: rgb(var(--mdui-color-primary));
     --vx-space-1: var(--vx-source-space-1);
     --vx-space-2: var(--vx-source-space-2);
     --vx-space-3: var(--vx-source-space-3);
@@ -19,15 +22,14 @@
     --vx-content-width: var(--vx-source-content-width);
     --vx-motion-standard: var(--vx-source-motion-standard);
     --vx-motion-easing: var(--vx-source-motion-emphasized);
-    --vx-color-primary: var(--vx-source-primary);
-    --vx-color-primary-soft: var(--vx-source-primary-soft);
-    /* 侧栏选中项底色：中性灰，文字继承正文色。 */
-    --vx-color-nav-active-bg: var(--vx-source-nav-active-bg);
-    --vx-color-surface-subtle: var(--vx-source-surface-subtle);
-    --vx-color-surface-hover: var(--vx-source-surface-hover);
-    --vx-color-surface-active: var(--vx-source-surface-active);
-    --vx-color-text-tertiary: var(--vx-source-text-tertiary);
-    --vx-color-divider: var(--vx-source-divider);
+    --vx-color-primary: rgb(var(--mdui-color-primary));
+    --vx-color-primary-soft: rgb(var(--mdui-color-primary-container));
+    --vx-color-nav-active-bg: rgb(var(--mdui-color-secondary-container));
+    --vx-color-surface-subtle: rgb(var(--mdui-color-surface-container-low));
+    --vx-color-surface-hover: color-mix(in srgb, rgb(var(--mdui-color-on-surface)) 4%, transparent);
+    --vx-color-surface-active: rgb(var(--mdui-color-surface-container-high));
+    --vx-color-text-tertiary: rgb(var(--mdui-color-outline));
+    --vx-color-divider: rgb(var(--mdui-color-outline-variant));
     --vx-space-5: var(--vx-source-space-5);
     --vx-space-10: var(--vx-source-space-10);
     --vx-space-12: var(--vx-source-space-12);
@@ -42,8 +44,9 @@
     --vx-radius-pill: var(--vx-source-radius-pill);
     --vx-shadow-card: var(--vx-source-shadow-card);
     --vx-shadow-overlay: var(--vx-source-shadow-overlay);
-    --vx-color-surface-glass: var(--vx-source-surface-glass);
-    --vx-color-surface-glass-control: var(--vx-source-surface-glass-control);
+    /* 玻璃材质是页面层效果，mdui 没有对应令牌，用色板值推导以免深浅色脱节。 */
+    --vx-color-surface-glass: color-mix(in srgb, rgb(var(--mdui-color-surface)) 72%, transparent);
+    --vx-color-surface-glass-control: color-mix(in srgb, rgb(var(--mdui-color-on-surface)) 5%, transparent);
     --vx-blur-glass: var(--vx-source-blur-glass);
     --vx-layout-content: var(--vx-source-layout-content);
     --vx-layout-list: var(--vx-source-layout-list);

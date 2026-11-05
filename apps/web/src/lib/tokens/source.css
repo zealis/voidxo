@@ -56,27 +56,9 @@
     --vx-source-motion-emphasized: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* 深色主题取值来自 http://mdbbs/ 实测（mdui-theme-layout-dark）与旧站编译 CSS：
-     body/appbar #303030，选中项与搜索框底 #424242，主题色 #8ab4f8，
-     分隔线与卡片描边 hsla(0,0%,100%,.12)，hover hsla(0,0%,100%,.04)。 */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --vx-source-surface: #303030;
-      --vx-source-surface-subtle: #424242;
-      --vx-source-surface-hover: hsla(0, 0%, 100%, 0.04);
-      --vx-source-surface-active: #424242;
-      --vx-source-text: #ffffff;
-      --vx-source-text-secondary: hsla(0, 0%, 100%, 0.7);
-      --vx-source-text-tertiary: hsla(0, 0%, 100%, 0.5);
-      --vx-source-border: hsla(0, 0%, 100%, 0.12);
-      --vx-source-divider: hsla(0, 0%, 100%, 0.12);
-      --vx-source-primary: #8ab4f8;
-      --vx-source-primary-soft: rgba(138, 180, 248, 0.16);
-      /* 深色选中项实测：白字 #424242 底（非主题蓝）。 */
-      --vx-source-nav-active-bg: #424242;
-      --vx-source-surface-glass: rgba(48, 48, 48, 0.72);
-      --vx-source-surface-glass-control: hsla(0, 0%, 100%, 0.08);
-      --vx-source-error: #f2b8b5;
-    }
-  }
+  /* V2.2 / M3：深浅色不再由本项目 media query 平行维护第二套取值，
+     改由 app.html 的首屏主题 class 与 mdui 色板驱动（setTheme / .mdui-theme-dark）。
+     此处的 --vx-source-* 保留为「品牌原始值」：品牌色是 setColorScheme 的输入依据；
+     间距、字号、圆角、布局等 mdui 未替代的令牌仍从这里取值。
+     颜色语义别名见 semantic.css，已全部映射到 --mdui-*。 */
 }
