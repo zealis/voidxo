@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { loginViaApi, requireCredentials } from './support/login.js';
+import { api, pick, pickFirst } from './support/api.js';
 
 // 写操作真实浏览器验收（可选）。
 //
@@ -14,45 +15,6 @@ test.use({ trace: 'off', screenshot: 'off', video: 'off' });
 test.describe.configure({ mode: 'serial' });
 
 const PREFIX = '[e2e] 写操作验收';
-
-type ApiResponse = { status: number; body: unknown };
-
-function pick<T = unknown>(body: unknown, path: string[]): T | undefined {
-  let current: any = body;
-  for (const key of path) {
-    if (current === null || current === undefined || typeof current !== 'object') return undefined;
-    current = current[key];
-  }
-  return current as T;
-}
-
-/** 同一份数据在不同接口上可能多包一层 user / question，按候选路径依次尝试。 */
-function pickFirst<T = unknown>(body: unknown, paths: string[][]): T | undefined {
-  for (const path of paths) {
-    const value = pick<T>(body, path);
-    if (value !== undefined && value !== null) return value;
-  }
-  return undefined;
-}
-
-/** 同源 API 调用；写操作自动带 CSRF，Cookie 复用浏览器上下文。 */
-async function api(page: Page, method: 'GET' | 'POST' | 'DELETE', path: string, data?: unknown): Promise<ApiResponse> {
-  const headers: Record<string, string> = { accept: 'application/json' };
-  if (method !== 'GET') {
-    const csrfRes = await page.request.get('/api/v1/auth/csrf');
-    const csrfBody = await csrfRes.json();
-    headers['X-CSRF-Token'] = pick<string>(csrfBody, ['data', 'csrf_token']) ?? '';
-    if (data !== undefined) headers['content-type'] = 'application/json';
-  }
-  const response = await page.request.fetch(path, { method, headers, data: data as never });
-  let body: unknown = null;
-  try {
-    body = await response.json();
-  } catch {
-    body = null;
-  }
-  return { status: response.status(), body };
-}
 
 /** 等自定义元素注册完成，避免点到未升级的空壳。 */
 async function waitForTags(page: Page, tags: string[]): Promise<void> {
