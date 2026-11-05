@@ -13,6 +13,10 @@ export const PLAIN_USER = process.env.VOIDXO_PLAIN_USER ?? '';
 export const PLAIN_PASSWORD = process.env.VOIDXO_PLAIN_PASSWORD ?? '';
 export const HAS_PLAIN_CREDENTIALS = Boolean(PLAIN_USER && PLAIN_PASSWORD);
 
+export const MOD_USER = process.env.VOIDXO_MOD_USER ?? '';
+export const MOD_PASSWORD = process.env.VOIDXO_MOD_PASSWORD ?? '';
+export const HAS_MOD_CREDENTIALS = Boolean(MOD_USER && MOD_PASSWORD);
+
 export async function loginAs(page: Page, user: string, password: string, device = 'playwright-auth-session'): Promise<void> {
   await page.goto('/login');
   const status = await page.evaluate(
@@ -44,6 +48,11 @@ export function loginAsPlainUser(page: Page): Promise<void> {
   return loginAs(page, PLAIN_USER, PLAIN_PASSWORD, 'playwright-plain-session');
 }
 
+/** 版主登录。 */
+export function loginAsModerator(page: Page): Promise<void> {
+  return loginAs(page, MOD_USER, MOD_PASSWORD, 'playwright-mod-session');
+}
+
 /** 在 describe 内调用：缺少管理员凭据时跳过整组。 */
 export function requireCredentials(): void {
   test.skip(!HAS_CREDENTIALS, '设置 VOIDXO_SMOKE_USER / VOIDXO_SMOKE_PASSWORD 后才会运行');
@@ -52,4 +61,9 @@ export function requireCredentials(): void {
 /** 在 describe 内调用：缺少普通用户凭据时跳过整组。 */
 export function requirePlainCredentials(): void {
   test.skip(!HAS_PLAIN_CREDENTIALS, '设置 VOIDXO_PLAIN_USER / VOIDXO_PLAIN_PASSWORD 后才会运行');
+}
+
+/** 在 describe 内调用：缺少版主凭据时跳过整组。 */
+export function requireModeratorCredentials(): void {
+  test.skip(!HAS_MOD_CREDENTIALS, '设置 VOIDXO_MOD_USER / VOIDXO_MOD_PASSWORD 后才会运行');
 }

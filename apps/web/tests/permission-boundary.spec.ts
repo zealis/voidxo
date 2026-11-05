@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { PLAIN_USER, loginAsPlainUser, requirePlainCredentials } from './support/login.js';
 import { api, pick } from './support/api.js';
+import { openAccountMenu } from './support/ui.js';
 
 // 普通用户权限边界验收（可选）。
 //
@@ -18,23 +19,6 @@ async function currentUserId(page: Page): Promise<number> {
   const id = pick<number>(me.body, ['data', 'user', 'id']) ?? pick<number>(me.body, ['data', 'id']);
   expect(id, `无法取得当前用户 id：${JSON.stringify(me.body)}`).toBeTruthy();
   return id as number;
-}
-
-/**
- * 打开账户菜单。SSR 已渲染按钮，但水合完成前点击没有处理器，
- * 因此带重试：未展开就再点一次，直到菜单真正出现。
- */
-async function openAccountMenu(page: Page) {
-  const trigger = page.locator('button[aria-haspopup="menu"]');
-  const menu = page.locator('.menu-panel');
-  await expect(trigger).toBeVisible();
-  await expect(async () => {
-    if ((await trigger.getAttribute('aria-expanded')) !== 'true') {
-      await trigger.click();
-    }
-    await expect(menu).toBeVisible({ timeout: 1_000 });
-  }).toPass({ timeout: 15_000 });
-  return menu;
 }
 
 test.describe('普通用户权限边界（可选）', () => {
@@ -62,7 +46,7 @@ test.describe('普通用户权限边界（可选）', () => {
     const checks: Array<[string, 'GET' | 'PATCH' | 'POST']> = [
       ['/api/v1/admin/stats', 'GET'],
       ['/api/v1/admin/users?page=1&page_size=20', 'GET'],
-      ['/api/v1/admin/content/questions?page=1&page_size=20', 'GET'],
+      ['/api/v1/admin/content/question?page=1&page_size=20', 'GET'],
       ['/api/v1/admin/topics?page=1&page_size=20', 'GET'],
       ['/api/v1/admin/options', 'GET']
     ];

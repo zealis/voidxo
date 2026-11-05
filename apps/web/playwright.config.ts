@@ -7,6 +7,9 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
+  // 所有用例共用同一个 dev server：多 worker 并行会互相抢路由编译，
+  // 曾导致自定义元素注册超过等待上限而随机失败。串行执行换取稳定。
+  workers: 1,
   reporter: [['list']],
   use: {
     baseURL: 'http://127.0.0.1:5173',
