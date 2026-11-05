@@ -4,6 +4,7 @@
   import { MediaRequestError, uploadAvatar } from '#lib/api/media.js';
   import Avatar from '#lib/components/Avatar.svelte';
   import VxButton from '#lib/components/ui/VxButton.svelte';
+  import VxTextField from '#lib/components/ui/VxTextField.svelte';
   import { AuthRequestError, changePassword } from '#lib/api/auth.js';
   import { updateProfile } from '#lib/api/profile.js';
   import type { PageProps } from './$types';
@@ -133,24 +134,19 @@
     {:else if data.profile}
       <form onsubmit={save} novalidate>
         <div class="field">
-          <label for="headline">一句话介绍</label>
-          <input id="headline" maxlength="40" bind:value={headline} />
+          <VxTextField label="一句话介绍" maxlength={40} bind:value={headline} />
         </div>
         <div class="field">
-          <label for="bio">个人简介</label>
-          <textarea id="bio" maxlength="160" rows="3" bind:value={bio}></textarea>
+          <VxTextField label="个人简介" rows={3} maxlength={160} bind:value={bio} />
         </div>
         <div class="field">
-          <label for="blog">个人主页</label>
-          <input id="blog" type="url" maxlength="255" bind:value={blog} />
+          <VxTextField label="个人主页" type="url" maxlength={255} bind:value={blog} />
         </div>
         <div class="field">
-          <label for="company">公司名称</label>
-          <input id="company" maxlength="255" bind:value={company} />
+          <VxTextField label="公司名称" maxlength={255} bind:value={company} />
         </div>
         <div class="field">
-          <label for="location">地址</label>
-          <input id="location" maxlength="255" bind:value={place} />
+          <VxTextField label="地址" maxlength={255} bind:value={place} />
         </div>
         <div class="form-actions">
           <VxButton type="submit" disabled={saving}>保存</VxButton>
@@ -162,16 +158,35 @@
         <h2 id="password-title">修改密码</h2>
         <form onsubmit={updatePassword} novalidate>
           <div class="field">
-            <label for="current-password">当前密码</label>
-            <input id="current-password" type="password" autocomplete="current-password" bind:value={currentPassword} required />
+            <VxTextField
+              label="当前密码"
+              type="password"
+              autocomplete="current-password"
+              required
+              bind:value={currentPassword}
+            />
           </div>
           <div class="field">
-            <label for="new-password">新密码</label>
-            <input id="new-password" type="password" minlength="8" maxlength="128" autocomplete="new-password" bind:value={newPassword} required />
+            <VxTextField
+              label="新密码"
+              type="password"
+              minlength={8}
+              maxlength={128}
+              autocomplete="new-password"
+              required
+              bind:value={newPassword}
+            />
           </div>
           <div class="field">
-            <label for="confirm-password">确认新密码</label>
-            <input id="confirm-password" type="password" minlength="8" maxlength="128" autocomplete="new-password" bind:value={confirmPassword} required />
+            <VxTextField
+              label="确认新密码"
+              type="password"
+              minlength={8}
+              maxlength={128}
+              autocomplete="new-password"
+              required
+              bind:value={confirmPassword}
+            />
           </div>
           <div class="form-actions">
             <VxButton type="submit" disabled={passwordSaving}>更新密码</VxButton>
@@ -190,23 +205,6 @@
   .profile-heading p { color: var(--vx-color-text-secondary); }
   form { display: grid; gap: var(--vx-space-4); }
   .field { display: grid; gap: var(--vx-space-1); }
-  label { color: var(--vx-color-text-secondary); font-size: 12px; }
-  input, textarea {
-    width: 100%;
-    padding: 8px 12px;
-    color: var(--vx-color-text-primary);
-    font: inherit;
-    background: var(--vx-color-surface);
-    border: 1px solid var(--vx-color-border);
-    border-radius: var(--vx-radius-control);
-    resize: vertical;
-  }
-  input { min-height: var(--vx-input-height); }
-  input:focus-visible, textarea:focus-visible {
-    border-color: var(--vx-color-text-primary);
-    outline: 2px solid var(--vx-color-focus);
-    outline-offset: 1px;
-  }
   .form-actions { display: flex; align-items: center; gap: var(--vx-space-3); }
   .success-message { color: var(--vx-color-text-secondary); font-size: 12px; }
   .form-error { color: var(--vx-color-error); font-size: 12px; }
