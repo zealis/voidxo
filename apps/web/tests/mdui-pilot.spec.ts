@@ -25,7 +25,7 @@ test.describe('mdui 2 试点验收', () => {
     await expect(page.locator('h1')).toHaveText('mdui 2 组件试点');
     await expect(page.getByText('本页用于验证 M1–M5 的接入方式', { exact: false })).toBeVisible();
     expect(await page.locator('mdui-button').count()).toBeGreaterThan(0);
-    expect(await page.locator('mdui-text-field').count()).toBe(2);
+    expect(await page.locator('mdui-text-field').count()).toBe(3);
     // 服务端不应注册组件或执行主题函数。
     const html = await page.content();
     expect(html).not.toContain('customElements.define');
@@ -53,11 +53,24 @@ test.describe('mdui 2 试点验收', () => {
     const values = await page.locator('form mdui-text-field').evaluateAll((nodes) =>
       nodes.map((node) => (node as HTMLElement & { value: string }).value)
     );
-    expect(values).toEqual(['张三', 'zhangsan@example.com']);
+    expect(values).toEqual(['张三', 'zhangsan@example.com', '']);
 
     await page.locator('mdui-button[type="submit"]').click();
     await expect(page.locator('[aria-live="polite"]')).toContainText('张三');
     await expect(page.locator('[aria-live="polite"]')).toContainText('zhangsan@example.com');
+  });
+
+  test('M5：多行文本框（rows）渲染 textarea 并同步值', async ({ page }) => {
+    await page.goto(PILOT);
+    await waitForUpgrade(page);
+
+    const multiline = page.locator('form mdui-text-field').nth(2);
+    const textarea = multiline.locator('textarea');
+    await expect(textarea).toHaveCount(1);
+
+    await textarea.fill('第一行\n第二行');
+    await expect(multiline).toHaveJSProperty('value', '第一行\n第二行');
+    await expect(page.getByTestId('field-values')).toContainText('备注：第一行');
   });
 
   test('M3：深浅色切换写入 mdui 主题 class', async ({ page }) => {

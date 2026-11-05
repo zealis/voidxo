@@ -20,6 +20,7 @@
 
   let displayName = $state('');
   let email = $state('');
+  let note = $state('');
   let submitted = $state('');
   let currentTheme = $state<VxTheme>('auto');
   let upgraded = $state('等待升级');
@@ -112,11 +113,15 @@
     <form onsubmit={submit} novalidate>
       <VxTextField label="姓名" name="displayName" autocomplete="name" bind:value={displayName} />
       <VxTextField label="邮箱" name="email" type="email" autocomplete="email" bind:value={email} />
+      <VxTextField label="备注（多行）" rows={4} maxlength={200} bind:value={note} />
       <div class="row">
         <VxButton type="submit" variant="filled">提交</VxButton>
-        <VxButton type="reset" variant="text" onclick={() => { displayName = ''; email = ''; submitted = ''; }}>重置</VxButton>
+        <VxButton type="reset" variant="text" onclick={() => { displayName = ''; email = ''; note = ''; submitted = ''; }}>重置</VxButton>
       </div>
     </form>
+    <p class="hint" data-testid="field-values">
+      姓名：{displayName || '（空）'} · 邮箱：{email || '（空）'} · 备注：{note || '（空）'}
+    </p>
     <p class="hint" aria-live="polite">{submitted || '尚未提交'}</p>
   </section>
 

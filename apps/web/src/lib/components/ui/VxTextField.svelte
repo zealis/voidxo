@@ -22,6 +22,8 @@
     minlength?: number;
     inputmode?: 'none' | 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
     pattern?: string;
+    // 多行文本框的固定行数；设置后 mdui-text-field 渲染为 textarea。
+    rows?: number;
     helper?: string;
     error?: string;
     disabled?: boolean;
@@ -43,6 +45,7 @@
     minlength,
     inputmode,
     pattern,
+    rows,
     helper,
     error,
     disabled = false,
@@ -74,6 +77,7 @@
     element.required = required;
     element.readonly = readonly;
     element.clearable = clearable;
+    if (rows != null) element.rows = rows;
   });
 </script>
 
