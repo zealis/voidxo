@@ -26,6 +26,8 @@ test.describe('后台 10 个分区（登录态、只读）', () => {
   });
 
   test('逐个分区直接访问：标题正确、无加载失败、无 5xx', async ({ page }) => {
+    // 顺序打开 10 个后台页面；dev server 首次编译每个路由较慢，默认 30 秒不够。
+    test.setTimeout(90_000);
     const serverErrors: string[] = [];
     page.on('response', (res) => {
       if (res.status() >= 500) serverErrors.push(`${res.status()} ${res.url()}`);
