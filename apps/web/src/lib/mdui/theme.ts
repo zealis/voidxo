@@ -32,7 +32,11 @@ export function applyTheme(theme: VxTheme): void {
   void import('mdui/functions/setTheme.js').then(({ setTheme }) => setTheme(theme));
 }
 
-/** 按品牌色生成整套 MD3 色板；组件 JS 与函数均为按需导入。 */
+/**
+ * 运行时按品牌色生成整套 MD3 色板（组件 JS 与函数均为按需导入）。
+ * 首屏不再调用：品牌色板已由 scripts/generate-brand-css.mjs 静态生成，
+ * 这里保留给「后台切换品牌色」这类运行时需求。
+ */
 export function applyBrandColor(hex: string): void {
   if (typeof document === 'undefined') return;
   void import('mdui/functions/setColorScheme.js').then(({ setColorScheme }) => setColorScheme(hex));

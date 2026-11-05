@@ -11,6 +11,9 @@
   import VxSnackbar from '#lib/components/ui/VxSnackbar.svelte';
   import VxTooltip from '#lib/components/ui/VxTooltip.svelte';
   import VxTabs from '#lib/components/ui/VxTabs.svelte';
+  import VxChip from '#lib/components/ui/VxChip.svelte';
+  import VxBadge from '#lib/components/ui/VxBadge.svelte';
+  import VxCard from '#lib/components/ui/VxCard.svelte';
   import type { VxOption, VxTabItem } from '#lib/components/ui/types.js';
   import { ensureMduiComponents, whenDefined } from '#lib/mdui/registry.js';
   import { applyTheme, isVxTheme, THEME_STORAGE_KEY, type VxTheme } from '#lib/mdui/theme.js';
@@ -29,6 +32,7 @@
   let tabValue = $state('overview');
   let dialogOpen = $state(false);
   let snackbarOpen = $state(false);
+  let chipSelected = $state(false);
 
   const planOptions: VxOption[] = [
     { value: 'free', label: '免费版' },
@@ -148,6 +152,19 @@
     <p class="hint" data-testid="tab-state">当前选项卡：{tabValue}</p>
   </section>
 
+  <section aria-labelledby="display-title">
+    <h2 id="display-title">标签、徽标与卡片</h2>
+    <div class="row">
+      <VxChip href="/topics/1">Go 后端</VxChip>
+      <VxChip variant="filter" selectable bind:selected={chipSelected}>SvelteKit</VxChip>
+      <VxBadge>3</VxBadge>
+    </div>
+    <VxCard variant="outlined">
+      <div class="card-body">卡片内容仍由业务组件控制，页面信息密度不变。</div>
+    </VxCard>
+    <p class="hint" data-testid="chip-state">筛选标签：{chipSelected ? '选中' : '未选中'}</p>
+  </section>
+
   <section aria-labelledby="theme-title">
     <h2 id="theme-title">深浅色切换</h2>
     <div class="row">
@@ -188,6 +205,7 @@
   .stack { display: grid; gap: var(--vx-space-4); max-width: 420px; }
   form { display: grid; gap: var(--vx-space-4); max-width: 420px; }
   .hint { margin-top: var(--vx-space-4); color: var(--vx-color-text-tertiary); font-size: var(--vx-font-size-small); }
+  .card-body { margin-top: var(--vx-space-4); padding: var(--vx-space-4); font-size: var(--vx-font-size-small); }
   .foot { margin-top: var(--vx-space-8); font-size: var(--vx-font-size-small); }
   .foot a { color: var(--vx-color-primary); }
 </style>

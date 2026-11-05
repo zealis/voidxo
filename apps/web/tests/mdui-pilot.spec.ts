@@ -152,4 +152,51 @@ test.describe('mdui 2 试点验收', () => {
     await expect(page.getByTestId('tab-state')).toContainText('当前选项卡：detail');
     await expect(page.locator('mdui-tab-panel[value="detail"]')).toBeVisible();
   });
+
+  test('M3：禁用 JS 时品牌色板已静态生效，无需等待客户端 setColorScheme', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto(PILOT);
+    const colors = await page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement);
+      return {
+        primaryLight: root.getPropertyValue('--mdui-color-primary-light').trim(),
+        primaryDark: root.getPropertyValue('--mdui-color-primary-dark').trim(),
+        vxSurface: root.getPropertyValue('--vx-color-surface').trim()
+      };
+    });
+    // #1a73e8 经 MD3 色板生成后的浅色主色；深色主色必须同时就位以支持主题切换。
+    expect(colors.primaryLight).toBe('0, 91, 192');
+    expect(colors.primaryDark).toBe('173, 199, 255');
+    expect(colors.vxSurface).not.toBe('');
+    await context.close();
+  });
+
+  test('扩展组件：Chip 选中态、Badge 与 Card 渲染', async ({ page }) => {
+    await page.goto(PILOT);
+    await waitForTags(page, ['mdui-chip', 'mdui-badge', 'mdui-card']);
+    await expect(page.locator('mdui-badge')).toContainText('3');
+    await expect(page.locator('mdui-card')).toContainText('卡片内容仍由业务组件控制');
+    await expect(page.getByTestId('chip-state')).toContainText('未选中');
+    await page.locator('mdui-chip[variant="filter"]').click();
+    await expect(page.getByTestId('chip-state')).toContainText('选中');
+  });
+
+  test('业务页面迁移：/login 换用 Vx* 后文案与表单同步仍成立', async ({ page }) => {
+    await page.goto('/login');
+    await waitForTags(page, ['mdui-text-field', 'mdui-button']);
+    // 目标边界：布局、信息密度、文案不变。
+    await expect(page.locator('h1')).toHaveText('登录');
+    await expect(page.getByText('注册新账号')).toBeVisible();
+    await expect(page.getByText('忘记密码')).toBeVisible();
+    await expect(page.locator('a[href="/"]').first()).toBeVisible();
+
+    await page.locator('mdui-text-field[name="login"] input').fill('alice');
+    await page.locator('mdui-text-field[name="password"] input').fill('secret');
+    const values = await page.locator('form mdui-text-field').evaluateAll((nodes) =>
+      nodes.map((node) => (node as HTMLElement & { value: string }).value)
+    );
+    expect(values).toEqual(['alice', 'secret']);
+    await expect(page.locator('mdui-button[type="submit"]')).toBeVisible();
+  });
 });

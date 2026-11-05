@@ -122,6 +122,19 @@ declare global {
       };
       'mdui-tab': HTMLAttributes<HTMLElement> & { value?: string; icon?: string };
       'mdui-tab-panel': HTMLAttributes<HTMLElement> & { value?: string; slot?: string };
+      'mdui-chip': HTMLAttributes<HTMLElement> & {
+        variant?: 'assist' | 'filter' | 'input' | 'suggestion';
+        selectable?: boolean;
+        selected?: boolean;
+        deletable?: boolean;
+        elevated?: boolean;
+      };
+      'mdui-badge': HTMLAttributes<HTMLElement> & { variant?: 'small' | 'large' };
+      'mdui-card': HTMLAttributes<HTMLElement> & {
+        variant?: 'elevated' | 'filled' | 'outlined';
+        clickable?: boolean;
+        disabled?: boolean;
+      };
     }
   }
 }

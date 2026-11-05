@@ -17,7 +17,10 @@ const loaders = {
   tooltip: () => import('mdui/components/tooltip.js'),
   tabs: () => import('mdui/components/tabs.js'),
   tab: () => import('mdui/components/tab.js'),
-  'tab-panel': () => import('mdui/components/tab-panel.js')
+  'tab-panel': () => import('mdui/components/tab-panel.js'),
+  chip: () => import('mdui/components/chip.js'),
+  badge: () => import('mdui/components/badge.js'),
+  card: () => import('mdui/components/card.js')
 } as const;
 
 export type MduiComponentName = keyof typeof loaders;

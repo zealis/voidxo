@@ -2,6 +2,8 @@
    按 CSS 级联规则它优先于本项目 @layer 内的样式，覆盖 mdui 只能走
    CSS 自定义属性、::part 与 slot，不能靠 overrides 层强压。 */
 @import 'mdui/mdui.css';
+/* 构建期生成的品牌色板，覆盖 mdui 默认紫色；首屏无需 JS 即为品牌色。 */
+@import './mdui-brand.css';
 @import '../tokens/source.css';
 @import '../tokens/semantic.css';
 @import '../tokens/components.css';
